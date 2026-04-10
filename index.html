@@ -623,6 +623,10 @@ function doLogin(role) {
     btn.querySelector('span:last-child').style.display = '';
     document.getElementById(`spin-${role}`).style.display = 'none';
     showSuccess(role);
+    // redirect after 1.5s
+    setTimeout(() => {
+      window.location.href = 'https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html';
+    }, 1500);
   }, 1200);
 }
 
