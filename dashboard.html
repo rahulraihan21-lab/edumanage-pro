@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduManage Pro — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-950: #0a1628;
+  --blue-900: #0f2142;
+  --blue-700: #1d407e;
+  --blue-600: #2554a0;
+  --blue-500: #2d6bc4;
+  --blue-400: #4c87e0;
+  --blue-300: #7aaff0;
+  --blue-50:  #eff6ff;
+  --gold:     #c9a84c;
+  --gold-lt:  #f0d990;
+  --white:    #ffffff;
+  --slate-50: #f8fafc;
+  --slate-100:#f1f5f9;
+  --slate-200:#e2e8f0;
+  --slate-400:#94a3b8;
+  --slate-500:#64748b;
+  --slate-700:#334155;
+  --slate-900:#0f172a;
+  --green:    #16a34a;
+  --red:      #dc2626;
+  --amber:    #d97706;
+  --sidebar-w:260px;
+  --header-h: 64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--slate-50);color:var(--slate-900);display:flex;min-height:100vh;overflow-x:hidden}
+
+/* OVERLAY */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
+.sb-overlay.open{display:block}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--blue-950);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,.18);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.sb-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px}
+.sb-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--blue-500),var(--blue-400));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(45,107,196,.45)}
+.sb-name strong{font-weight:800;font-size:.85rem;color:#fff;letter-spacing:.3px;display:block}
+.sb-name span{font-size:.62rem;color:var(--blue-300);font-weight:500;margin-top:1px;display:block}
+.sb-close{display:none;margin-left:auto;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);width:28px;height:28px;border-radius:7px;font-size:14px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:9px}
+.sb-section-label{font-size:.56rem;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:12px 8px 5px;display:block}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .16s;color:rgba(255,255,255,.52);font-size:.81rem;font-weight:500;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.88)}
+.sb-item.active{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(45,107,196,.32)}
+.sb-item .icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(255,255,255,.07);flex-shrink:0}
+.sb-item.active .icon{background:rgba(255,255,255,.18)}
+.sb-item .nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:99px}
+.sb-footer{padding:12px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-profile{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px;cursor:pointer;transition:background .16s}
+.sb-profile:hover{background:rgba(255,255,255,.07)}
+.sb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--blue-950);flex-shrink:0}
+.sb-profile-info strong{font-size:.76rem;font-weight:700;color:#fff;display:block}
+.sb-profile-info span{font-size:.62rem;color:var(--slate-400)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left .28s cubic-bezier(.4,0,.2,1)}
+
+/* TOPBAR */
+.topbar{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,.05);gap:12px}
+.hamburger{display:none;background:none;border:1.5px solid var(--slate-200);border-radius:9px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--slate-600);flex-shrink:0;transition:border-color .15s}
+.hamburger:hover{border-color:var(--blue-400);color:var(--blue-500)}
+.topbar-left{flex:1;min-width:0}
+.topbar-left h1{font-size:.95rem;font-weight:700;color:var(--slate-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-left p{font-size:.67rem;color:var(--slate-400);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-search{display:flex;align-items:center;gap:7px;background:var(--slate-100);border-radius:10px;padding:7px 12px;border:1.5px solid transparent;transition:all .18s;cursor:text}
+.tb-search:hover{border-color:var(--blue-300);background:#fff}
+.tb-search input{border:none;background:transparent;outline:none;font-family:inherit;font-size:.78rem;color:var(--slate-700);width:140px}
+.tb-search input::placeholder{color:var(--slate-400)}
+.tb-btn{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--slate-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--slate-500);position:relative;transition:all .15s;flex-shrink:0}
+.tb-btn:hover{border-color:var(--blue-400);color:var(--blue-500)}
+.tb-notif::after{content:'';position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.tb-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 5px;border-radius:10px;border:1.5px solid var(--slate-200);transition:border-color .15s;flex-shrink:0}
+.tb-user:hover{border-color:var(--blue-300)}
+.tb-useravatar{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--blue-600),var(--blue-400));color:#fff;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center}
+.tb-username{font-size:.76rem;font-weight:600;color:var(--slate-700)}
+
+/* CONTENT */
+.content{padding:22px;flex:1}
+
+/* WELCOME BANNER */
+.welcome-banner{background:linear-gradient(135deg,var(--blue-900) 0%,var(--blue-700) 55%,var(--blue-500) 100%);border-radius:16px;padding:24px 26px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(15,33,66,.22);gap:20px}
+.welcome-banner::before{content:'';position:absolute;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,.07) 0%,transparent 70%);top:-70px;right:100px;border-radius:50%;pointer-events:none}
+.wb-text{position:relative;z-index:1;flex:1;min-width:0}
+.wb-text p{font-size:.68rem;color:var(--blue-300);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.wb-text h2{font-family:'Instrument Serif',serif;font-size:1.6rem;color:#fff;font-weight:400;line-height:1.25;margin-bottom:6px}
+.wb-text h2 em{color:var(--gold-lt);font-style:italic}
+.wb-text small{font-size:.72rem;color:rgba(255,255,255,.5)}
+.wb-stats{display:flex;gap:12px;position:relative;z-index:1;flex-shrink:0}
+.wb-stat{text-align:center;padding:10px 16px;background:rgba(255,255,255,.09);border-radius:11px;border:1px solid rgba(255,255,255,.12)}
+.wb-stat strong{display:block;font-size:1.4rem;font-weight:800;color:#fff;line-height:1}
+.wb-stat span{font-size:.6rem;color:rgba(255,255,255,.48);font-weight:500;margin-top:4px;display:block}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--slate-200);box-shadow:0 2px 10px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:10px;transition:box-shadow .2s,transform .2s;cursor:default}
+.stat-card:hover{box-shadow:0 8px 24px rgba(45,107,196,.12);transform:translateY(-2px)}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between}
+.sc-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.sc-icon.blue{background:#eff6ff}.sc-icon.green{background:#f0fdf4}.sc-icon.amber{background:#fffbeb}.sc-icon.red{background:#fef2f2}
+.sc-change{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:6px}
+.sc-change.up{background:#f0fdf4;color:var(--green)}.sc-change.down{background:#fef2f2;color:var(--red)}
+.sc-label{font-size:.68rem;color:var(--slate-500);font-weight:500}
+.sc-value{font-size:1.6rem;font-weight:800;color:var(--slate-900);line-height:1;margin-top:2px}
+.sc-sub{font-size:.62rem;color:var(--slate-400);margin-top:2px}
+.sc-bar{height:4px;background:var(--slate-100);border-radius:99px;overflow:hidden}
+.sc-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue-500),var(--blue-400))}
+.sc-bar-fill.green{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.sc-bar-fill.amber{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.sc-bar-fill.red{background:linear-gradient(90deg,#dc2626,#f87171)}
+
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-bottom:20px}
+.right-col{display:flex;flex-direction:column;gap:18px}
+
+/* SECTION CARD */
+.sec-card{background:var(--white);border-radius:14px;border:1px solid var(--slate-200);box-shadow:0 2px 10px rgba(0,0,0,.04);overflow:hidden}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--slate-100)}
+.sec-head h3{font-size:.86rem;font-weight:700;color:var(--slate-900)}
+.sec-head p{font-size:.63rem;color:var(--slate-400);margin-top:2px}
+.sec-action{font-size:.7rem;color:var(--blue-500);font-weight:600;cursor:pointer;padding:5px 10px;border-radius:7px;transition:background .15s;white-space:nowrap}
+.sec-action:hover{background:var(--blue-50)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.stu-table{width:100%;border-collapse:collapse;min-width:500px}
+.stu-table th{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--slate-400);padding:9px 16px;text-align:left;background:var(--slate-50);border-bottom:1px solid var(--slate-100);white-space:nowrap}
+.stu-table td{padding:11px 16px;font-size:.78rem;border-bottom:1px solid var(--slate-100);color:var(--slate-700);vertical-align:middle;white-space:nowrap}
+.stu-table tr:last-child td{border-bottom:none}
+.stu-table tr:hover td{background:var(--slate-50)}
+.stu-name-cell{display:flex;align-items:center;gap:9px}
+.stu-av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.stu-av.a{background:linear-gradient(135deg,#2d6bc4,#4c87e0)}.stu-av.b{background:linear-gradient(135deg,#16a34a,#4ade80)}.stu-av.c{background:linear-gradient(135deg,#d97706,#fbbf24)}.stu-av.d{background:linear-gradient(135deg,#7c3aed,#a78bfa)}.stu-av.e{background:linear-gradient(135deg,#dc2626,#f87171)}
+.stu-name{font-weight:600;font-size:.8rem;color:var(--slate-900)}
+.stu-id{font-size:.62rem;color:var(--slate-400)}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:.63rem;font-weight:700}
+.badge.paid{background:#f0fdf4;color:var(--green)}.badge.due{background:#fef2f2;color:var(--red)}.badge.partial{background:#fffbeb;color:var(--amber)}
+.att-pill{display:inline-flex;align-items:center;gap:5px;font-size:.74rem;font-weight:700}
+.att-dot{width:7px;height:7px;border-radius:50%}
+.att-dot.high{background:var(--green)}.att-dot.mid{background:var(--amber)}.att-dot.low{background:var(--red)}
+.td-action{display:flex;gap:5px}
+.td-btn{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--slate-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--slate-400);transition:all .15s}
+.td-btn:hover{border-color:var(--blue-400);color:var(--blue-500);background:var(--blue-50)}
+
+/* FEE DONUT */
+.fee-overview{padding:16px 20px}
+.fee-donut-wrap{display:flex;align-items:center;gap:16px;margin-top:10px}
+.fee-legend{flex:1;display:flex;flex-direction:column;gap:8px}
+.fee-leg-item{display:flex;align-items:center;justify-content:space-between;font-size:.7rem}
+.fee-leg-left{display:flex;align-items:center;gap:7px;color:var(--slate-600)}
+.fee-leg-dot{width:8px;height:8px;border-radius:50%}
+.fee-leg-val{font-weight:700;color:var(--slate-900);font-size:.78rem}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px}
+.qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 8px;border-radius:11px;border:1.5px solid var(--slate-200);background:var(--white);cursor:pointer;transition:all .18s;text-align:center}
+.qa-btn:hover{border-color:var(--blue-400);background:var(--blue-50);transform:translateY(-2px);box-shadow:0 4px 14px rgba(45,107,196,.12)}
+.qa-btn .qi{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.qa-btn span{font-size:.67rem;font-weight:600;color:var(--slate-700);line-height:1.3}
+
+/* ATTENDANCE CHART */
+.att-chart-wrap{padding:16px 20px}
+.att-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+.att-day-label{text-align:center;font-size:.58rem;font-weight:700;color:var(--slate-400);margin-bottom:5px}
+.att-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.att-bar-bg{width:100%;height:64px;background:var(--slate-100);border-radius:6px;overflow:hidden;display:flex;align-items:flex-end}
+.att-bar-fill{width:100%;border-radius:6px}
+.att-bar-fill.full{background:linear-gradient(to top,var(--blue-600),var(--blue-400))}
+.att-bar-fill.partial{background:linear-gradient(to top,#d97706,#fbbf24)}
+.att-bar-val{font-size:.58rem;font-weight:700;color:var(--slate-500)}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+
+/* ACTIVITY */
+.activity-list{padding:4px 20px 16px;display:flex;flex-direction:column}
+.act-item{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--slate-100)}
+.act-item:last-child{border-bottom:none}
+.act-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.act-icon.blue{background:var(--blue-50)}.act-icon.green{background:#f0fdf4}.act-icon.amber{background:#fffbeb}.act-icon.red{background:#fef2f2}
+.act-text strong{display:block;font-size:.76rem;font-weight:600;color:var(--slate-800);line-height:1.3}
+.act-text span{font-size:.63rem;color:var(--slate-400);margin-top:2px;display:block}
+
+/* NOTICES */
+.notice-list{padding:4px 16px 16px;display:flex;flex-direction:column;gap:9px}
+.notice-item{padding:11px 13px;border-radius:9px;border-left:3px solid;background:var(--slate-50);cursor:pointer;transition:background .15s}
+.notice-item:hover{background:var(--blue-50)}
+.notice-item.info{border-color:var(--blue-500)}.notice-item.warn{border-color:var(--amber)}.notice-item.alert{border-color:var(--red)}
+.notice-item strong{font-size:.76rem;font-weight:700;color:var(--slate-800);display:block;margin-bottom:3px}
+.notice-item p{font-size:.65rem;color:var(--slate-500);line-height:1.5}
+.notice-item time{font-size:.58rem;color:var(--slate-400);display:block;margin-top:4px;font-weight:600}
+
+/* EXAMS */
+.exam-list{padding:4px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.exam-item{display:flex;gap:11px;align-items:center}
+.exam-date-block{width:42px;text-align:center;background:linear-gradient(135deg,var(--blue-900),var(--blue-700));border-radius:9px;padding:7px 4px;flex-shrink:0}
+.exam-date-block strong{display:block;font-size:1rem;font-weight:800;color:#fff;line-height:1}
+.exam-date-block span{font-size:.52rem;color:var(--blue-300);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.exam-info strong{font-size:.76rem;font-weight:700;color:var(--slate-800);display:block}
+.exam-info span{font-size:.62rem;color:var(--slate-400);margin-top:2px;display:block}
+.exam-tag{margin-left:auto;padding:3px 8px;border-radius:5px;font-size:.6rem;font-weight:700;white-space:nowrap}
+.exam-tag.sci{background:var(--blue-50);color:var(--blue-600)}.exam-tag.com{background:#f0fdf4;color:var(--green)}.exam-tag.hum{background:#fffbeb;color:var(--amber)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.content>*{animation:fadeUp .32s ease both}
+.content>*:nth-child(1){animation-delay:.04s}
+.content>*:nth-child(2){animation-delay:.09s}
+.content>*:nth-child(3){animation-delay:.14s}
+.content>*:nth-child(4){animation-delay:.19s}
+.content>*:nth-child(5){animation-delay:.24s}
+
+/* ══ RESPONSIVE ══ */
+
+/* Tablet ≤1100px */
+@media(max-width:1100px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .main-grid{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .bottom-grid{grid-template-columns:1fr 1fr}
+  .bottom-grid>.sec-card:last-child{grid-column:1/-1}
+  .tb-search{display:none}
+}
+
+/* Mobile ≤768px — hide sidebar, show hamburger */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,.35)}
+  .sb-close{display:flex}
+  .hamburger{display:flex}
+  .main{margin-left:0}
+
+  .topbar{padding:0 14px;gap:8px;height:56px}
+  .topbar-left p{display:none}
+  .tb-username{display:none}
+
+  .content{padding:12px}
+
+  /* Banner: stack vertically, stats wrap to grid */
+  .welcome-banner{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:18px 16px;
+    gap:14px;
+  }
+  .wb-stats{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+  .wb-stat{
+    padding:10px 6px;
+    min-width:0;
+  }
+  .wb-stat strong{font-size:1.1rem}
+  .wb-stat span{font-size:.55rem}
+  .wb-text h2{font-size:1.25rem}
+
+  /* Stat cards: always 2 col */
+  .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .sc-value{font-size:1.25rem}
+
+  .main-grid{grid-template-columns:1fr}
+  .right-col{display:flex;flex-direction:column;gap:14px}
+  .bottom-grid{grid-template-columns:1fr}
+  .bottom-grid>.sec-card:last-child{grid-column:auto}
+}
+
+/* Small mobile ≤480px */
+@media(max-width:480px){
+  .content{padding:10px}
+
+  .welcome-banner{padding:16px 14px}
+  .wb-text h2{font-size:1.1rem}
+  .wb-text small{font-size:.65rem}
+  /* On very small screens, stats go 3-col still but smaller */
+  .wb-stats{gap:6px}
+  .wb-stat{padding:8px 4px}
+  .wb-stat strong{font-size:1rem}
+  .wb-stat span{font-size:.5rem}
+
+  .stat-grid{gap:8px}
+  .stat-card{padding:13px}
+  .sc-icon{width:34px;height:34px;font-size:14px}
+  .sc-value{font-size:1.1rem}
+  .sc-sub{display:none}
+  .sc-change{font-size:.56rem;padding:2px 5px}
+
+  .att-bars{gap:3px}
+  .att-bar-bg{height:52px}
+  .att-bar-val{font-size:.52rem}
+
+  .sec-head{padding:12px 13px}
+  .sec-head h3{font-size:.82rem}
+  .fee-overview{padding:12px 13px}
+  .att-chart-wrap{padding:12px 13px}
+  .activity-list{padding:4px 13px 12px}
+  .notice-list{padding:4px 13px 12px}
+  .exam-list{padding:4px 13px 12px}
+  .qa-grid{padding:10px;gap:6px}
+  .qa-btn{padding:12px 6px}
+  .qa-btn .qi{width:34px;height:34px;font-size:14px}
+  .qa-btn span{font-size:.62rem}
+
+  .stu-table th,.stu-table td{padding:8px 11px}
+  .stu-name{font-size:.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="sb-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">🎓</div>
+    <div class="sb-name">
+      <strong>EduManage Pro</strong>
+      <span>School Management System</span>
+    </div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-section-label">Main</span>
+    <a class="sb-item active" href="#"><span class="icon">📊</span> Dashboard</a>
+    <a class="sb-item" href="#"><span class="icon">🎓</span> Students <span class="nbadge">3</span></a>
+    <a class="sb-item" href="#"><span class="icon">👨‍🏫</span> Teachers</a>
+    <a class="sb-item" href="#"><span class="icon">📅</span> Attendance</a>
+    <span class="sb-section-label">Academic</span>
+    <a class="sb-item" href="#"><span class="icon">📝</span> Exams</a>
+    <a class="sb-item" href="#"><span class="icon">📋</span> Results</a>
+    <a class="sb-item" href="#"><span class="icon">📚</span> Class Routine</a>
+    <a class="sb-item" href="#"><span class="icon">📖</span> Lecture Plans</a>
+    <a class="sb-item" href="#"><span class="icon">✏️</span> Assignments</a>
+    <span class="sb-section-label">Finance</span>
+    <a class="sb-item" href="#"><span class="icon">💰</span> Fee Collection</a>
+    <a class="sb-item" href="#"><span class="icon">💸</span> Expenses</a>
+    <span class="sb-section-label">Communication</span>
+    <a class="sb-item" href="#"><span class="icon">📢</span> Notices</a>
+    <a class="sb-item" href="#"><span class="icon">📱</span> SMS / Calls</a>
+    <a class="sb-item" href="#"><span class="icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-profile">
+      <div class="sb-avatar">RA</div>
+      <div class="sb-profile-info">
+        <strong>Admin</strong>
+        <span>Super Administrator</span>
+      </div>
+      <span style="margin-left:auto;color:rgba(255,255,255,.28);font-size:10px">⚙️</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="hamburger" onclick="openSidebar()">☰</button>
+    <div class="topbar-left">
+      <h1>Admin Dashboard</h1>
+      <p>Thursday, April 9, 2026 · Academic Year 2025–26</p>
+    </div>
+    <div class="topbar-right">
+      <div class="tb-search">
+        <span style="font-size:12px;color:var(--slate-400)">🔍</span>
+        <input type="text" placeholder="Search students, teachers…">
+      </div>
+      <button class="tb-btn tb-notif">🔔</button>
+      <button class="tb-btn">📅</button>
+      <div class="tb-user">
+        <div class="tb-useravatar">RA</div>
+        <span class="tb-username">Rahul Admin</span>
+        <span style="font-size:9px;color:var(--slate-400);margin-left:2px">▾</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+      <div class="wb-text">
+        <p>👋 Good Morning</p>
+        <h2>Welcome back, <em>Admin</em></h2>
+        <small>Here's what's happening at your institution today.</small>
+      </div>
+      <div class="wb-stats">
+        <div class="wb-stat"><strong>94%</strong><span>Attendance Today</span></div>
+        <div class="wb-stat"><strong>৳1.2L</strong><span>April Fee</span></div>
+        <div class="wb-stat"><strong>3</strong><span>Exams This Week</span></div>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="sc-top"><div class="sc-icon blue">👩‍🎓</div><span class="sc-change up">↑ 12</span></div>
+        <div><div class="sc-label">Total Students</div><div class="sc-value">1,248</div><div class="sc-sub">Across 14 classes</div></div>
+        <div class="sc-bar"><div class="sc-bar-fill" style="width:78%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top"><div class="sc-icon green">✅</div><span class="sc-change up">↑ 2.3%</span></div>
+        <div><div class="sc-label">Attendance Today</div><div class="sc-value">94.2%</div><div class="sc-sub">1,176 of 1,248 present</div></div>
+        <div class="sc-bar"><div class="sc-bar-fill green" style="width:94%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top"><div class="sc-icon amber">💰</div><span class="sc-change down">৳8k due</span></div>
+        <div><div class="sc-label">Fee Collected (April)</div><div class="sc-value">৳1.2L</div><div class="sc-sub">৳8,400 outstanding</div></div>
+        <div class="sc-bar"><div class="sc-bar-fill amber" style="width:65%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-top"><div class="sc-icon red">📝</div><span class="sc-change up">3 upcoming</span></div>
+        <div><div class="sc-label">Exams Scheduled</div><div class="sc-value">8</div><div class="sc-sub">Next: Physics — Apr 12</div></div>
+        <div class="sc-bar"><div class="sc-bar-fill red" style="width:45%"></div></div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+      <!-- TABLE -->
+      <div class="sec-card">
+        <div class="sec-head">
+          <div><h3>Recent Students</h3><p>Latest enrollments and activity</p></div>
+          <span class="sec-action">View All →</span>
+        </div>
+        <div class="table-wrap">
+          <table class="stu-table">
+            <thead><tr><th>Student</th><th>Class</th><th>Attendance</th><th>Fee</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="stu-name-cell"><div class="stu-av a">AR</div><div><div class="stu-name">Arif Rahman</div><div class="stu-id">#001 · Roll 01</div></div></div></td><td><b style="font-size:.76rem">Class X–A</b></td><td><span class="att-pill"><span class="att-dot high"></span>96%</span></td><td><span class="badge paid">✓ Paid</span></td><td><div class="td-action"><button class="td-btn">👁</button><button class="td-btn">✏️</button></div></td></tr>
+              <tr><td><div class="stu-name-cell"><div class="stu-av b">SM</div><div><div class="stu-name">Sumaiya Mim</div><div class="stu-id">#002 · Roll 02</div></div></div></td><td><b style="font-size:.76rem">Class IX–B</b></td><td><span class="att-pill"><span class="att-dot mid"></span>78%</span></td><td><span class="badge partial">⚠ Partial</span></td><td><div class="td-action"><button class="td-btn">👁</button><button class="td-btn">✏️</button></div></td></tr>
+              <tr><td><div class="stu-name-cell"><div class="stu-av c">TH</div><div><div class="stu-name">Tanvir Hossain</div><div class="stu-id">#003 · Roll 05</div></div></div></td><td><b style="font-size:.76rem">Class X–B</b></td><td><span class="att-pill"><span class="att-dot high"></span>91%</span></td><td><span class="badge paid">✓ Paid</span></td><td><div class="td-action"><button class="td-btn">👁</button><button class="td-btn">✏️</button></div></td></tr>
+              <tr><td><div class="stu-name-cell"><div class="stu-av d">NK</div><div><div class="stu-name">Nusrat Khanam</div><div class="stu-id">#004 · Roll 08</div></div></div></td><td><b style="font-size:.76rem">Class VIII–A</b></td><td><span class="att-pill"><span class="att-dot low"></span>62%</span></td><td><span class="badge due">✗ Due</span></td><td><div class="td-action"><button class="td-btn">👁</button><button class="td-btn">✏️</button></div></td></tr>
+              <tr><td><div class="stu-name-cell"><div class="stu-av e">RI</div><div><div class="stu-name">Rahim Islam</div><div class="stu-id">#005 · Roll 11</div></div></div></td><td><b style="font-size:.76rem">Class XI–Sci</b></td><td><span class="att-pill"><span class="att-dot high"></span>88%</span></td><td><span class="badge paid">✓ Paid</span></td><td><div class="td-action"><button class="td-btn">👁</button><button class="td-btn">✏️</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT COL -->
+      <div class="right-col">
+        <!-- FEE DONUT -->
+        <div class="sec-card">
+          <div class="sec-head"><div><h3>Fee Overview</h3><p>April 2026</p></div></div>
+          <div class="fee-overview">
+            <div class="fee-donut-wrap">
+              <svg width="86" height="86" viewBox="0 0 90 90" style="flex-shrink:0">
+                <circle cx="45" cy="45" r="34" fill="none" stroke="#f1f5f9" stroke-width="11"/>
+                <circle cx="45" cy="45" r="34" fill="none" stroke="#2d6bc4" stroke-width="11" stroke-dasharray="213.6 113.5" stroke-dashoffset="53" stroke-linecap="round"/>
+                <circle cx="45" cy="45" r="34" fill="none" stroke="#dc2626" stroke-width="11" stroke-dasharray="65.7 261.3" stroke-dashoffset="-160.6" stroke-linecap="round"/>
+                <circle cx="45" cy="45" r="34" fill="none" stroke="#d97706" stroke-width="11" stroke-dasharray="49.3 277.8" stroke-dashoffset="-226.3" stroke-linecap="round"/>
+                <text x="45" y="49" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a" font-family="Plus Jakarta Sans,sans-serif">65%</text>
+              </svg>
+              <div class="fee-legend">
+                <div class="fee-leg-item"><div class="fee-leg-left"><span class="fee-leg-dot" style="background:#2d6bc4"></span>Paid</div><span class="fee-leg-val">৳78,000</span></div>
+                <div class="fee-leg-item"><div class="fee-leg-left"><span class="fee-leg-dot" style="background:#dc2626"></span>Due</div><span class="fee-leg-val">৳24,000</span></div>
+                <div class="fee-leg-item"><div class="fee-leg-left"><span class="fee-leg-dot" style="background:#d97706"></span>Partial</div><span class="fee-leg-val">৳18,000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- QUICK ACTIONS -->
+        <div class="sec-card">
+          <div class="sec-head"><div><h3>Quick Actions</h3></div></div>
+          <div class="qa-grid">
+            <button class="qa-btn"><div class="qi" style="background:#eff6ff">➕</div><span>Add Student</span></button>
+            <button class="qa-btn"><div class="qi" style="background:#f0fdf4">✅</div><span>Attendance</span></button>
+            <button class="qa-btn"><div class="qi" style="background:#fffbeb">💰</div><span>Collect Fee</span></button>
+            <button class="qa-btn"><div class="qi" style="background:#fef2f2">📢</div><span>Post Notice</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE CHART -->
+    <div class="sec-card" style="margin-bottom:20px">
+      <div class="sec-head">
+        <div><h3>Weekly Attendance</h3><p>April 2026 — Last 7 school days</p></div>
+        <span class="sec-action">Full Report →</span>
+      </div>
+      <div class="att-chart-wrap">
+        <div class="att-bars">
+          <div><div class="att-day-label">Mon</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill full" style="height:88%"></div></div><div class="att-bar-val">96%</div></div></div>
+          <div><div class="att-day-label">Tue</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill full" style="height:80%"></div></div><div class="att-bar-val">91%</div></div></div>
+          <div><div class="att-day-label">Wed</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill partial" style="height:60%"></div></div><div class="att-bar-val">76%</div></div></div>
+          <div><div class="att-day-label">Thu</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill full" style="height:85%"></div></div><div class="att-bar-val">94%</div></div></div>
+          <div><div class="att-day-label">Fri</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill full" style="height:75%"></div></div><div class="att-bar-val">89%</div></div></div>
+          <div><div class="att-day-label">Sat</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill partial" style="height:50%"></div></div><div class="att-bar-val">72%</div></div></div>
+          <div><div class="att-day-label">Sun</div><div class="att-bar-wrap"><div class="att-bar-bg"><div class="att-bar-fill full" style="height:92%"></div></div><div class="att-bar-val">98%</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="bottom-grid">
+      <!-- ACTIVITY -->
+      <div class="sec-card">
+        <div class="sec-head"><div><h3>Recent Activity</h3><p>Last 24 hours</p></div></div>
+        <div class="activity-list">
+          <div class="act-item"><div class="act-icon green">💰</div><div class="act-text"><strong>Fee collected — Arif Rahman</strong><span>৳3,500 · Class X-A · 2 hrs ago</span></div></div>
+          <div class="act-item"><div class="act-icon blue">✅</div><div class="act-text"><strong>Attendance marked — Class XI</strong><span>42 present · 3 absent · 3 hrs ago</span></div></div>
+          <div class="act-item"><div class="act-icon amber">📝</div><div class="act-text"><strong>Exam result published</strong><span>Mid-term · Class X · 5 hrs ago</span></div></div>
+          <div class="act-item"><div class="act-icon red">📢</div><div class="act-text"><strong>Notice posted: Holiday</strong><span>Eid-ul-Fitr break · Yesterday</span></div></div>
+          <div class="act-item"><div class="act-icon blue">👩‍🎓</div><div class="act-text"><strong>New student enrolled</strong><span>Nusrat Khanam · Class VIII-A</span></div></div>
+        </div>
+      </div>
+      <!-- NOTICES -->
+      <div class="sec-card">
+        <div class="sec-head"><div><h3>Notices</h3><p>Active announcements</p></div><span class="sec-action">+ New</span></div>
+        <div class="notice-list">
+          <div class="notice-item info"><strong>📅 Annual Sports Day</strong><p>All students must participate on April 18, 2026.</p><time>Posted: April 7, 2026</time></div>
+          <div class="notice-item warn"><strong>⚠️ Fee Deadline Reminder</strong><p>April fee due by April 15. Late fine will apply.</p><time>Posted: April 5, 2026</time></div>
+          <div class="notice-item alert"><strong>🚨 Parent-Teacher Meeting</strong><p>PTM for Class IX & X — April 13 at 10 AM.</p><time>Posted: April 3, 2026</time></div>
+        </div>
+      </div>
+      <!-- EXAMS -->
+      <div class="sec-card">
+        <div class="sec-head"><div><h3>Upcoming Exams</h3><p>Next 2 weeks</p></div><span class="sec-action">Schedule →</span></div>
+        <div class="exam-list">
+          <div class="exam-item"><div class="exam-date-block"><strong>12</strong><span>APR</span></div><div class="exam-info"><strong>Physics Final</strong><span>Class XI Science · 9:00 AM</span></div><span class="exam-tag sci">Science</span></div>
+          <div class="exam-item"><div class="exam-date-block"><strong>14</strong><span>APR</span></div><div class="exam-info"><strong>Accounting Mid-term</strong><span>Class XII Commerce · 10:00 AM</span></div><span class="exam-tag com">Commerce</span></div>
+          <div class="exam-item"><div class="exam-date-block"><strong>16</strong><span>APR</span></div><div class="exam-info"><strong>English Literature</strong><span>Class X All · 9:00 AM</span></div><span class="exam-tag hum">Humanities</span></div>
+          <div class="exam-item"><div class="exam-date-block"><strong>19</strong><span>APR</span></div><div class="exam-info"><strong>Mathematics Final</strong><span>Class IX All · 9:00 AM</span></div><span class="exam-tag sci">Science</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+window.addEventListener('resize',()=>{ if(window.innerWidth>768) closeSidebar(); });
+</script>
+</body>
+</html>

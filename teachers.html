@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EduManage Pro — Teachers</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a;display:flex;min-height:100vh;overflow-x:hidden;width:100%;max-width:100vw}
+:root{
+  --b950:#0a1628;--b900:#0f2142;--b700:#1d407e;--b600:#2554a0;
+  --b500:#2d6bc4;--b400:#4c87e0;--b300:#7aaff0;--b50:#eff6ff;
+  --gold:#c9a84c;--glt:#f0d990;
+  --w:#fff;--s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;
+  --s300:#cbd5e1;--s400:#94a3b8;--s500:#64748b;--s700:#334155;--s900:#0f172a;
+  --grn:#16a34a;--red:#dc2626;--amb:#d97706;--pur:#7c3aed;
+  --sw:260px;
+}
+
+/* ── OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.overlay.open{display:block}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);height:100vh;background:var(--b950);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:transform .28s ease;overflow-y:auto}
+.sb-brand{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--b500),var(--b400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-name strong{font-size:.83rem;font-weight:800;color:#fff;display:block}
+.sb-name span{font-size:.6rem;color:var(--b300);display:block}
+.sb-x{display:none;margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+.sb-nav{padding:8px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
+.sb-lbl{font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:10px 8px 4px;display:block}
+.sb-a{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;color:rgba(255,255,255,.5);font-size:.79rem;font-weight:500;text-decoration:none;transition:all .15s}
+.sb-a:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.sb-a.on{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-weight:700}
+.sb-a .ic{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sb-a.on .ic{background:rgba(255,255,255,.18)}
+.sb-foot{padding:10px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-prof{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;cursor:pointer}
+.sb-prof:hover{background:rgba(255,255,255,.07)}
+.sb-av{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--glt));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--b950);flex-shrink:0}
+.sb-pi strong{font-size:.74rem;font-weight:700;color:#fff;display:block}
+.sb-pi span{font-size:.6rem;color:var(--s400)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;width:calc(100% - var(--sw));overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--w);border-bottom:1px solid var(--s200);display:flex;align-items:center;gap:10px;padding:0 20px;position:sticky;top:0;z-index:50;box-shadow:0 1px 6px rgba(0,0,0,.05);width:100%;overflow:hidden}
+.hbg{display:none;background:none;border:1.5px solid var(--s200);border-radius:8px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--s500);flex-shrink:0}
+.tl{flex:1;min-width:0}
+.tl h1{font-size:.92rem;font-weight:700;color:var(--s900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl p{font-size:.65rem;color:var(--s400)}
+.tr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tib{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--s500);position:relative;flex-shrink:0}
+.tib.nt::after{content:'';position:absolute;top:5px;right:5px;width:6px;height:6px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.tu{display:flex;align-items:center;gap:7px;padding:4px 9px 4px 4px;border:1.5px solid var(--s200);border-radius:9px;cursor:pointer;flex-shrink:0}
+.tu-av{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--b600),var(--b400));color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tu span{font-size:.73rem;font-weight:600;color:var(--s700)}
+
+/* ── CONTENT ── */
+.content{padding:20px;flex:1;width:100%;min-width:0;overflow-x:hidden}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.ph-l h2{font-size:1.15rem;font-weight:800;color:var(--s900)}
+.ph-l p{font-size:.7rem;color:var(--s400);margin-top:3px}
+.pbtn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(45,107,196,.3);transition:transform .15s;white-space:nowrap;flex-shrink:0}
+.pbtn:hover{transform:translateY(-1px)}
+
+/* ── STAT STRIP ── */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%}
+.sc{background:var(--w);border-radius:12px;padding:14px 16px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
+.si{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.si.bl{background:#eff6ff}.si.gr{background:#f0fdf4}.si.am{background:#fffbeb}.si.pu{background:#f5f3ff}
+.sd strong{display:block;font-size:1.2rem;font-weight:800;color:var(--s900);line-height:1}
+.sd span{font-size:.62rem;color:var(--s400);font-weight:500;display:block;margin-top:2px}
+
+/* ── FILTERS ── */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;width:100%}
+.sbox{display:flex;align-items:center;gap:7px;background:var(--w);border:1.5px solid var(--s200);border-radius:10px;padding:8px 13px;flex:1;min-width:160px;transition:border-color .15s}
+.sbox:focus-within{border-color:var(--b400)}
+.sbox input{border:none;background:transparent;outline:none;font-family:inherit;font-size:.79rem;color:var(--s900);width:100%;min-width:0}
+.sbox input::placeholder{color:var(--s400)}
+.fsel{background:var(--w);border:1.5px solid var(--s200);border-radius:10px;padding:8px 12px;font-family:inherit;font-size:.78rem;font-weight:600;color:var(--s700);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .15s}
+.fsel:focus{border-color:var(--b400)}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;width:100%;min-width:0}
+
+/* ── TEACHER GRID (desktop) ── */
+.teacher-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;width:100%}
+
+/* ── TEACHER CARD ── */
+.tc{background:var(--w);border-radius:14px;border:1px solid var(--s200);box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:pointer;width:100%;min-width:0}
+.tc:hover{box-shadow:0 8px 24px rgba(45,107,196,.12);transform:translateY(-2px)}
+.tc-top{height:5px}
+.tc-top.c0{background:linear-gradient(90deg,#2d6bc4,#4c87e0)}
+.tc-top.c1{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.tc-top.c2{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.tc-top.c3{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.tc-top.c4{background:linear-gradient(90deg,#dc2626,#f87171)}
+.tc-top.c5{background:linear-gradient(90deg,#0891b2,#22d3ee)}
+.tc-top.c6{background:linear-gradient(90deg,#be185d,#f472b6)}
+.tc-top.c7{background:linear-gradient(90deg,#059669,#34d399)}
+.tc-body{padding:16px}
+.tc-avatar-row{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.tc-av{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.tc-av.c0{background:linear-gradient(135deg,#2d6bc4,#4c87e0)}
+.tc-av.c1{background:linear-gradient(135deg,#16a34a,#4ade80)}
+.tc-av.c2{background:linear-gradient(135deg,#d97706,#fbbf24)}
+.tc-av.c3{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.tc-av.c4{background:linear-gradient(135deg,#dc2626,#f87171)}
+.tc-av.c5{background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.tc-av.c6{background:linear-gradient(135deg,#be185d,#f472b6)}
+.tc-av.c7{background:linear-gradient(135deg,#059669,#34d399)}
+.tc-info{flex:1;min-width:0}
+.tc-name{font-size:.88rem;font-weight:800;color:var(--s900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-role{font-size:.65rem;color:var(--s400);margin-top:2px}
+.tc-status{padding:3px 9px;border-radius:99px;font-size:.6rem;font-weight:700;flex-shrink:0}
+.tc-status.active{background:#f0fdf4;color:var(--grn)}
+.tc-status.inactive{background:var(--s100);color:var(--s400)}
+.tc-divider{height:1px;background:var(--s100);margin-bottom:11px}
+.tc-row{display:flex;align-items:center;gap:7px;font-size:.7rem;color:var(--s500);margin-bottom:7px;min-width:0}
+.tc-row:last-of-type{margin-bottom:0}
+.tc-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-row .ic{font-size:12px;flex-shrink:0}
+.tc-pin{display:inline-flex;align-items:center;gap:5px;background:var(--s100);padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:800;color:var(--s700);font-family:monospace;letter-spacing:2px}
+.tc-footer{display:flex;gap:5px;margin-top:12px;padding-top:11px;border-top:1px solid var(--s100)}
+.tc-btn{flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.7rem;font-weight:700;color:var(--s600);cursor:pointer;transition:all .15s;text-align:center}
+.tc-btn:hover{border-color:var(--b400);color:var(--b500);background:var(--b50)}
+.tc-btn.red:hover{border-color:#fecaca;color:var(--red);background:#fef2f2}
+
+/* ── MOBILE LIST ── */
+.mob-list{display:none;flex-direction:column;gap:9px;width:100%}
+.ml-item{background:var(--w);border-radius:12px;border:1px solid var(--s200);padding:13px 14px;display:flex;align-items:center;gap:11px;width:100%;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.ml-av{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.ml-info{flex:1;min-width:0}
+.ml-name{font-size:.84rem;font-weight:700;color:var(--s900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-sub{font-size:.63rem;color:var(--s400);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.ml-tag{padding:2px 8px;border-radius:5px;font-size:.6rem;font-weight:700}
+.ml-tag.sub{background:var(--b50);color:var(--b600)}
+.ml-tag.active{background:#f0fdf4;color:var(--grn)}
+.ml-tag.inactive{background:var(--s100);color:var(--s400)}
+.ml-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+.ml-pin{font-size:.65rem;font-weight:800;color:var(--s500);font-family:monospace;letter-spacing:2px;background:var(--s100);padding:2px 8px;border-radius:5px}
+.ml-acts{display:flex;gap:5px}
+.ml-act{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--s200);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--s400);transition:all .15s}
+.ml-act:hover{border-color:var(--b400);color:var(--b500);background:var(--b50)}
+.ml-act.r:hover{border-color:#fecaca;color:var(--red);background:#fef2f2}
+
+/* ── RIGHT COL ── */
+.right-col{display:flex;flex-direction:column;gap:14px;min-width:0;width:100%;overflow:hidden}
+
+/* ── SEC CARD ── */
+.secc{background:var(--w);border-radius:13px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden;width:100%;min-width:0}
+.sch{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--s100);gap:8px;flex-wrap:wrap}
+.sch h3{font-size:.82rem;font-weight:700;color:var(--s900)}
+.sch p{font-size:.6rem;color:var(--s400);margin-top:1px}
+.sch-btn{padding:6px 12px;border-radius:8px;border:none;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sch-btn.pr{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff}
+.sch-btn.pr:hover{transform:translateY(-1px)}
+
+/* SUBJECT DISTRIBUTION */
+.subj-list{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.subj-row{display:flex;align-items:center;gap:10px}
+.subj-name{font-size:.72rem;font-weight:700;color:var(--s700);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.subj-bar-bg{flex:1;height:7px;background:var(--s100);border-radius:99px;overflow:hidden}
+.subj-bar-fill{height:100%;border-radius:99px}
+.subj-count{font-size:.65rem;font-weight:700;color:var(--s400);width:20px;text-align:right;flex-shrink:0}
+
+/* ATTENDANCE OVERVIEW */
+.att-ov{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.att-ov-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.att-ov-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.att-ov-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.att-ov-name{font-size:.72rem;font-weight:600;color:var(--s800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.att-pct{font-size:.72rem;font-weight:800;flex-shrink:0}
+.att-pct.hi{color:var(--grn)}.att-pct.md{color:var(--amb)}.att-pct.lo{color:var(--red)}
+
+/* ACTIVITY */
+.act-list{padding:4px 14px 12px;display:flex;flex-direction:column}
+.act-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--s100)}
+.act-row:last-child{border-bottom:none}
+.act-d{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.act-t strong{display:block;font-size:.73rem;font-weight:600;color:var(--s800);line-height:1.3}
+.act-t span{font-size:.6rem;color:var(--s400);margin-top:1px;display:block}
+
+/* ── MODAL ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--w);border-radius:18px 18px 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.15);animation:su .25s ease}
+@keyframes su{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--s100);position:sticky;top:0;background:var(--w);z-index:1}
+.mh h3{font-size:.9rem;font-weight:700;color:var(--s900)}
+.mx{width:28px;height:28px;border-radius:7px;background:var(--s100);border:none;cursor:pointer;font-size:13px;color:var(--s500)}
+.mb{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.mf{display:flex;flex-direction:column;gap:5px;width:100%}
+.mf label{font-size:.66rem;font-weight:700;color:var(--s600)}
+.mf input,.mf select{width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--s200);background:var(--s50);font-family:inherit;font-size:.8rem;font-weight:500;color:var(--s900);outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none}
+.mf input:focus,.mf select:focus{border-color:var(--b400);background:var(--w)}
+.mf input::placeholder{color:var(--s300)}
+.pin-row{display:flex;gap:8px;align-items:center}
+.pin-inp{flex:1;padding:10px 13px;border-radius:9px;border:1.5px solid var(--s200);background:var(--s50);font-family:monospace;font-size:1rem;font-weight:800;letter-spacing:5px;color:var(--b600);outline:none;transition:border-color .15s;text-align:center}
+.pin-inp:focus{border-color:var(--b400);background:var(--w)}
+.gen-btn{padding:9px 13px;border-radius:9px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.72rem;font-weight:700;color:var(--s600);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.gen-btn:hover{border-color:var(--b400);color:var(--b500)}
+.subj-checks{display:flex;flex-wrap:wrap;gap:6px}
+.sck{padding:6px 12px;border-radius:7px;border:1.5px solid var(--s200);font-size:.7rem;font-weight:700;color:var(--s500);cursor:pointer;transition:all .15s;user-select:none}
+.sck.on{background:var(--b50);border-color:var(--b500);color:var(--b600)}
+.mfoot{padding:12px 18px 20px;display:flex;gap:8px}
+.mfb{flex:1;padding:11px;border-radius:10px;border:none;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s}
+.mfb.cn{background:var(--s100);color:var(--s600)}
+.mfb.sv{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff}
+.mfb.sv:hover{transform:translateY(-1px)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s900);color:#fff;padding:11px 18px;border-radius:11px;font-size:.76rem;font-weight:600;display:flex;align-items:center;gap:8px;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:all .3s cubic-bezier(.175,.885,.32,1.275);white-space:nowrap;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.gr{background:linear-gradient(135deg,#16a34a,#15803d)}
+.toast.re{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1050px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+}
+@media(max-width:720px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-x{display:flex}
+  .hbg{display:flex}
+  .main{margin-left:0;width:100%}
+  .topbar{padding:0 12px;height:54px}
+  .tl p{display:none}
+  .tu span{display:none}
+  .content{padding:12px}
+  .ph{flex-direction:column}
+  .pbtn{width:100%;justify-content:center}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:flex;flex-direction:column;gap:12px}
+  /* hide card grid, show mobile list */
+  .teacher-grid{display:none}
+  .mob-list{display:flex}
+  .fbar{flex-wrap:wrap}
+  .sbox{flex:unset;width:100%;min-width:0}
+  .fsel{flex:1;min-width:calc(50% - 4px)}
+  .mgrid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats{gap:8px}
+  .sc{padding:10px 11px;gap:8px}
+  .si{width:32px;height:32px;font-size:13px}
+  .sd strong{font-size:1rem}
+  .content{padding:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="ov" onclick="closeSB()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">🎓</div>
+    <div class="sb-name"><strong>EduManage Pro</strong><span>School Management System</span></div>
+    <button class="sb-x" onclick="closeSB()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-lbl">Main</span>
+    <a class="sb-a" href="#"><span class="ic">📊</span>Dashboard</a>
+    <a class="sb-a" href="#"><span class="ic">🎓</span>Students</a>
+    <a class="sb-a on" href="#"><span class="ic">👨‍🏫</span>Teachers</a>
+    <a class="sb-a" href="#"><span class="ic">📅</span>Attendance</a>
+    <span class="sb-lbl">Academic</span>
+    <a class="sb-a" href="#"><span class="ic">📝</span>Exams</a>
+    <a class="sb-a" href="#"><span class="ic">📋</span>Results</a>
+    <a class="sb-a" href="#"><span class="ic">📚</span>Class Routine</a>
+    <a class="sb-a" href="#"><span class="ic">📖</span>Lecture Plans</a>
+    <a class="sb-a" href="#"><span class="ic">✏️</span>Assignments</a>
+    <span class="sb-lbl">Finance</span>
+    <a class="sb-a" href="#"><span class="ic">💰</span>Fee Collection</a>
+    <a class="sb-a" href="#"><span class="ic">💸</span>Expenses</a>
+    <span class="sb-lbl">Communication</span>
+    <a class="sb-a" href="#"><span class="ic">📢</span>Notices</a>
+    <a class="sb-a" href="#"><span class="ic">📱</span>SMS / Calls</a>
+    <a class="sb-a" href="#"><span class="ic">⚙️</span>Settings</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-prof">
+      <div class="sb-av">RA</div>
+      <div class="sb-pi"><strong>Admin</strong><span>Super Administrator</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <button class="hbg" onclick="openSB()">☰</button>
+    <div class="tl"><h1>Teachers</h1><p>Manage teaching staff</p></div>
+    <div class="tr">
+      <button class="tib nt">🔔</button>
+      <div class="tu"><div class="tu-av">RA</div><span>Rahul Admin</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="ph">
+      <div class="ph-l">
+        <h2>Teacher Management</h2>
+        <p>38 teachers · Academic Year 2025–26</p>
+      </div>
+      <button class="pbtn" onclick="openModal()">➕ Add Teacher</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="sc"><div class="si bl">👨‍🏫</div><div class="sd"><strong>38</strong><span>Total Teachers</span></div></div>
+      <div class="sc"><div class="si gr">✅</div><div class="sd"><strong>35</strong><span>Active</span></div></div>
+      <div class="sc"><div class="si am">📚</div><div class="sd"><strong>12</strong><span>Subjects</span></div></div>
+      <div class="sc"><div class="si pu">🏆</div><div class="sd"><strong>94%</strong><span>Avg Attendance</span></div></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="fbar">
+      <div class="sbox">
+        <span style="font-size:13px;color:var(--s400)">🔍</span>
+        <input type="text" id="srch" placeholder="Search by name or subject…" oninput="renderAll()">
+      </div>
+      <select class="fsel" id="subjF" onchange="renderAll()">
+        <option value="">All Subjects</option>
+        <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+        <option>Biology</option><option>English</option><option>Bangla</option>
+        <option>ICT</option><option>History</option>
+      </select>
+      <select class="fsel" id="statusF" onchange="renderAll()">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+      <!-- LEFT: TEACHER LIST -->
+      <div>
+        <!-- Desktop grid -->
+        <div class="teacher-grid" id="tcGrid"></div>
+        <!-- Mobile list -->
+        <div class="mob-list" id="mobList"></div>
+      </div>
+
+      <!-- RIGHT COL -->
+      <div class="right-col">
+
+        <!-- SUBJECT DISTRIBUTION -->
+        <div class="secc">
+          <div class="sch"><div><h3>Subject Distribution</h3><p>Teachers per subject</p></div></div>
+          <div class="subj-list">
+            <div class="subj-row"><span class="subj-name">Mathematics</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:90%;background:linear-gradient(90deg,#2d6bc4,#4c87e0)"></div></div><span class="subj-count">5</span></div>
+            <div class="subj-row"><span class="subj-name">English</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:72%;background:linear-gradient(90deg,#16a34a,#4ade80)"></div></div><span class="subj-count">4</span></div>
+            <div class="subj-row"><span class="subj-name">Physics</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:54%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div><span class="subj-count">3</span></div>
+            <div class="subj-row"><span class="subj-name">Chemistry</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:54%;background:linear-gradient(90deg,#d97706,#fbbf24)"></div></div><span class="subj-count">3</span></div>
+            <div class="subj-row"><span class="subj-name">Bangla</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:54%;background:linear-gradient(90deg,#dc2626,#f87171)"></div></div><span class="subj-count">3</span></div>
+            <div class="subj-row"><span class="subj-name">Biology</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:36%;background:linear-gradient(90deg,#0891b2,#22d3ee)"></div></div><span class="subj-count">2</span></div>
+            <div class="subj-row"><span class="subj-name">ICT</span><div class="subj-bar-bg"><div class="subj-bar-fill" style="width:36%;background:linear-gradient(90deg,#be185d,#f472b6)"></div></div><span class="subj-count">2</span></div>
+          </div>
+        </div>
+
+        <!-- TEACHER ATTENDANCE -->
+        <div class="secc">
+          <div class="sch"><div><h3>Teacher Attendance</h3><p>Today's status</p></div></div>
+          <div class="att-ov" id="attOv"></div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="secc">
+          <div class="sch"><div><h3>Recent Activity</h3><p>Latest actions</p></div></div>
+          <div class="act-list">
+            <div class="act-row"><div class="act-d" style="background:var(--grn)"></div><div class="act-t"><strong>New teacher added: Karim Sir</strong><span>Mathematics · 1 hr ago</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--b500)"></div><div class="act-t"><strong>PIN reset: Fatema Ma'am</strong><span>English · 3 hrs ago</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--amb)"></div><div class="act-t"><strong>Profile updated: Rahim Sir</strong><span>Physics · Yesterday</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--red)"></div><div class="act-t"><strong>Teacher deactivated: Rahman Sir</strong><span>History · 2 days ago</span></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ADD TEACHER MODAL -->
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mh">
+      <h3 id="modalTitle">➕ Add New Teacher</h3>
+      <button class="mx" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mb">
+      <div class="mgrid">
+        <div class="mf" style="grid-column:1/-1">
+          <label>FULL NAME *</label>
+          <input type="text" id="mName" placeholder="Teacher full name">
+        </div>
+        <div class="mf">
+          <label>PHONE NUMBER *</label>
+          <input type="tel" id="mPhone" placeholder="01XXXXXXXXX">
+        </div>
+        <div class="mf">
+          <label>EMAIL</label>
+          <input type="email" id="mEmail" placeholder="email@school.edu">
+        </div>
+        <div class="mf">
+          <label>DESIGNATION</label>
+          <select id="mDesig">
+            <option>Senior Teacher</option>
+            <option>Assistant Teacher</option>
+            <option>Lecturer</option>
+            <option>Head of Department</option>
+          </select>
+        </div>
+        <div class="mf">
+          <label>STATUS</label>
+          <select id="mStatus">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf">
+        <label>SUBJECTS</label>
+        <div class="subj-checks" id="subjChecks">
+          <div class="sck" onclick="this.classList.toggle('on')">Mathematics</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Physics</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Chemistry</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Biology</div>
+          <div class="sck" onclick="this.classList.toggle('on')">English</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Bangla</div>
+          <div class="sck" onclick="this.classList.toggle('on')">ICT</div>
+          <div class="sck" onclick="this.classList.toggle('on')">History</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Geography</div>
+          <div class="sck" onclick="this.classList.toggle('on')">Accounting</div>
+        </div>
+      </div>
+      <div class="mf">
+        <label>ACCESS PIN *</label>
+        <div class="pin-row">
+          <input type="text" class="pin-inp" id="mPin" maxlength="6" placeholder="••••••" inputmode="numeric">
+          <button class="gen-btn" onclick="genPin()">🎲 Generate</button>
+        </div>
+      </div>
+      <div class="mf">
+        <label>ADDRESS</label>
+        <input type="text" id="mAddr" placeholder="Teacher's address">
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="mfb cn" onclick="closeModal()">Cancel</button>
+      <button class="mfb sv" onclick="saveTeacher()">✅ Save Teacher</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const colors = ['c0','c1','c2','c3','c4','c5','c6','c7'];
+const subjects = ['Mathematics','Physics','Chemistry','Biology','English','Bangla','ICT','History','Geography','Accounting'];
+const designations = ['Senior Teacher','Assistant Teacher','Lecturer','Head of Department'];
+
+const teacherData = [
+  {id:1,name:'Md. Karim Uddin',phone:'01711-111111',email:'karim@school.edu',desig:'Head of Department',subj:['Mathematics'],status:'active',att:98},
+  {id:2,name:'Fatema Begum',phone:'01722-222222',email:'fatema@school.edu',desig:'Senior Teacher',subj:['English','Bangla'],status:'active',att:95},
+  {id:3,name:'Rahim Hossain',phone:'01733-333333',email:'rahim@school.edu',desig:'Senior Teacher',subj:['Physics','Chemistry'],status:'active',att:92},
+  {id:4,name:'Sumaiya Akter',phone:'01744-444444',email:'sumaiya@school.edu',desig:'Assistant Teacher',subj:['Biology'],status:'active',att:88},
+  {id:5,name:'Tariq Aziz',phone:'01755-555555',email:'tariq@school.edu',desig:'Lecturer',subj:['ICT','Mathematics'],status:'active',att:96},
+  {id:6,name:'Nusrat Jahan',phone:'01766-666666',email:'nusrat@school.edu',desig:'Senior Teacher',subj:['History','Geography'],status:'active',att:82},
+  {id:7,name:'Imran Sheikh',phone:'01777-777777',email:'imran@school.edu',desig:'Assistant Teacher',subj:['Chemistry'],status:'inactive',att:70},
+  {id:8,name:'Ritu Das',phone:'01788-888888',email:'ritu@school.edu',desig:'Lecturer',subj:['Bangla','English'],status:'active',att:91},
+];
+
+let teachers = [...teacherData];
+const pins = {1:'1234',2:'5678',3:'9012',4:'3456',5:'7890',6:'2345',7:'6789',8:'0123'};
+
+function getPIN(id) { return pins[id] || '••••'; }
+
+// ── RENDER DESKTOP GRID ──
+function renderGrid(list) {
+  const grid = document.getElementById('tcGrid');
+  if (!list.length) { grid.innerHTML = '<div style="padding:30px;text-align:center;color:var(--s400);font-size:.8rem;grid-column:1/-1">No teachers found</div>'; return; }
+  grid.innerHTML = list.map((t, i) => {
+    const c = colors[t.id % 8];
+    const attClass = t.att >= 90 ? 'hi' : t.att >= 75 ? 'md' : 'lo';
+    return `
+    <div class="tc">
+      <div class="tc-top ${c}"></div>
+      <div class="tc-body">
+        <div class="tc-avatar-row">
+          <div class="tc-av ${c}">${t.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+          <div class="tc-info">
+            <div class="tc-name">${t.name}</div>
+            <div class="tc-role">${t.desig}</div>
+          </div>
+          <span class="tc-status ${t.status}">${t.status === 'active' ? '● Active' : '○ Inactive'}</span>
+        </div>
+        <div class="tc-divider"></div>
+        <div class="tc-row"><span class="ic">📚</span><span>${t.subj.join(', ')}</span></div>
+        <div class="tc-row"><span class="ic">📱</span><span>${t.phone}</span></div>
+        <div class="tc-row"><span class="ic">📊</span><span style="color:${t.att>=90?'var(--grn)':t.att>=75?'var(--amb)':'var(--red)'};font-weight:700">${t.att}% attendance</span></div>
+        <div class="tc-row"><span class="ic">🔑</span><span class="tc-pin">PIN: ${getPIN(t.id)}</span></div>
+        <div class="tc-footer">
+          <button class="tc-btn" onclick="editTeacher(${t.id})">✏️ Edit</button>
+          <button class="tc-btn" onclick="resetPin(${t.id})">🔑 Reset PIN</button>
+          <button class="tc-btn red" onclick="removeTeacher(${t.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER MOBILE LIST ──
+function renderMobile(list) {
+  const mob = document.getElementById('mobList');
+  if (!list.length) { mob.innerHTML = '<div style="padding:24px;text-align:center;color:var(--s400);font-size:.8rem">No teachers found</div>'; return; }
+  mob.innerHTML = list.map(t => {
+    const c = colors[t.id % 8];
+    return `
+    <div class="ml-item">
+      <div class="ml-av ${c}">${t.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <div class="ml-info">
+        <div class="ml-name">${t.name}</div>
+        <div class="ml-sub">${t.desig}</div>
+        <div class="ml-tags">
+          ${t.subj.map(s=>`<span class="ml-tag sub">${s}</span>`).join('')}
+          <span class="ml-tag ${t.status}">${t.status === 'active' ? '● Active' : '○ Inactive'}</span>
+        </div>
+      </div>
+      <div class="ml-right">
+        <div class="ml-pin">PIN: ${getPIN(t.id)}</div>
+        <div class="ml-acts">
+          <button class="ml-act" onclick="editTeacher(${t.id})">✏️</button>
+          <button class="ml-act" onclick="resetPin(${t.id})">🔑</button>
+          <button class="ml-act r" onclick="removeTeacher(${t.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER ATTENDANCE OVERVIEW ──
+function renderAttOv() {
+  const el = document.getElementById('attOv');
+  el.innerHTML = teachers.slice(0, 6).map(t => {
+    const c = colors[t.id % 8];
+    const attClass = t.att >= 90 ? 'hi' : t.att >= 75 ? 'md' : 'lo';
+    return `
+    <div class="att-ov-row">
+      <div class="att-ov-left">
+        <div class="att-ov-av ${c}">${t.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+        <span class="att-ov-name">${t.name.split(' ')[0]} ${t.name.split(' ')[1] || ''}</span>
+      </div>
+      <span class="att-pct ${attClass}">${t.att}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── FILTER & RENDER ──
+function renderAll() {
+  const q = document.getElementById('srch').value.toLowerCase();
+  const subj = document.getElementById('subjF').value;
+  const status = document.getElementById('statusF').value;
+  const list = teachers.filter(t => {
+    if (q && !t.name.toLowerCase().includes(q) && !t.subj.join(' ').toLowerCase().includes(q)) return false;
+    if (subj && !t.subj.includes(subj)) return false;
+    if (status && t.status !== status) return false;
+    return true;
+  });
+  renderGrid(list);
+  renderMobile(list);
+}
+
+// ── ACTIONS ──
+function removeTeacher(id) {
+  teachers = teachers.filter(t => t.id !== id);
+  renderAll(); renderAttOv();
+  toast_('🗑 Teacher removed', 're');
+}
+function resetPin(id) {
+  const newPin = Math.floor(1000 + Math.random() * 9000).toString();
+  pins[id] = newPin;
+  renderAll();
+  toast_('🔑 New PIN: ' + newPin, 'gr');
+}
+function editTeacher(id) {
+  const t = teachers.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('modalTitle').textContent = '✏️ Edit Teacher';
+  document.getElementById('mName').value = t.name;
+  document.getElementById('mPhone').value = t.phone;
+  document.getElementById('mEmail').value = t.email;
+  document.getElementById('mPin').value = getPIN(t.id);
+  document.getElementById('mStatus').value = t.status;
+  document.querySelectorAll('#subjChecks .sck').forEach(el => {
+    el.classList.toggle('on', t.subj.includes(el.textContent));
+  });
+  openModal();
+}
+
+// ── MODAL ──
+function openModal() { document.getElementById('mbg').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal() {
+  document.getElementById('mbg').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('modalTitle').textContent = '➕ Add New Teacher';
+  ['mName','mPhone','mEmail','mPin','mAddr'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('#subjChecks .sck').forEach(el => el.classList.remove('on'));
+}
+function genPin() {
+  document.getElementById('mPin').value = Math.floor(1000 + Math.random() * 9000).toString();
+}
+function saveTeacher() {
+  const name = document.getElementById('mName').value.trim();
+  const phone = document.getElementById('mPhone').value.trim();
+  const pin = document.getElementById('mPin').value.trim();
+  if (!name || !phone) { toast_('⚠️ Name and phone are required', 're'); return; }
+  if (!pin || pin.length < 4) { toast_('⚠️ PIN must be at least 4 digits', 're'); return; }
+  const selSubj = Array.from(document.querySelectorAll('#subjChecks .sck.on')).map(el => el.textContent);
+  const newId = Date.now();
+  teachers.unshift({
+    id: newId,
+    name,
+    phone,
+    email: document.getElementById('mEmail').value || '—',
+    desig: document.getElementById('mDesig').value,
+    subj: selSubj.length ? selSubj : ['—'],
+    status: document.getElementById('mStatus').value,
+    att: 100
+  });
+  pins[newId] = pin;
+  closeModal();
+  renderAll();
+  renderAttOv();
+  toast_('✅ ' + name + ' added!', 'gr');
+}
+
+// ── TOAST ──
+let tt;
+function toast_(msg, type = '') {
+  clearTimeout(tt);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (type ? ' ' + type : '');
+  requestAnimationFrame(() => t.classList.add('show'));
+  tt = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── SIDEBAR ──
+function openSB() { document.getElementById('sb').classList.add('open'); document.getElementById('ov').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeSB() { document.getElementById('sb').classList.remove('open'); document.getElementById('ov').classList.remove('open'); document.body.style.overflow = ''; }
+window.addEventListener('resize', () => { if (window.innerWidth > 720) closeSB(); });
+
+// ── INIT ──
+renderAll();
+renderAttOv();
+</script>
+</body>
+</html>

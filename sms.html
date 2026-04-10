@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EduManage Pro — SMS & Calls</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a;display:flex;min-height:100vh;overflow-x:hidden;width:100%;max-width:100vw}
+:root{
+  --b950:#0a1628;--b900:#0f2142;--b700:#1d407e;--b600:#2554a0;
+  --b500:#2d6bc4;--b400:#4c87e0;--b300:#7aaff0;--b50:#eff6ff;
+  --gold:#c9a84c;--glt:#f0d990;
+  --w:#fff;--s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;
+  --s300:#cbd5e1;--s400:#94a3b8;--s500:#64748b;--s700:#334155;--s900:#0f172a;
+  --grn:#16a34a;--red:#dc2626;--amb:#d97706;--pur:#7c3aed;
+  --sw:260px;
+}
+
+/* ── SIDEBAR (same pattern) ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.overlay.open{display:block}
+.sidebar{width:var(--sw);height:100vh;background:var(--b950);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:transform .28s ease;overflow-y:auto}
+.sb-brand{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--b500),var(--b400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-name strong{font-size:.83rem;font-weight:800;color:#fff;display:block}
+.sb-name span{font-size:.6rem;color:var(--b300);display:block}
+.sb-x{display:none;margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+.sb-nav{padding:8px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
+.sb-lbl{font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:10px 8px 4px;display:block}
+.sb-a{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;color:rgba(255,255,255,.5);font-size:.79rem;font-weight:500;text-decoration:none;transition:all .15s}
+.sb-a:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.sb-a.on{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-weight:700}
+.sb-a .ic{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sb-a.on .ic{background:rgba(255,255,255,.18)}
+.sb-foot{padding:10px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-prof{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;cursor:pointer}
+.sb-prof:hover{background:rgba(255,255,255,.07)}
+.sb-av{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--glt));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--b950);flex-shrink:0}
+.sb-pi strong{font-size:.74rem;font-weight:700;color:#fff;display:block}
+.sb-pi span{font-size:.6rem;color:var(--s400)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;width:calc(100% - var(--sw));overflow-x:hidden}
+.topbar{height:60px;background:var(--w);border-bottom:1px solid var(--s200);display:flex;align-items:center;gap:10px;padding:0 20px;position:sticky;top:0;z-index:50;box-shadow:0 1px 6px rgba(0,0,0,.05);width:100%;overflow:hidden}
+.hbg{display:none;background:none;border:1.5px solid var(--s200);border-radius:8px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--s500);flex-shrink:0}
+.tl{flex:1;min-width:0}
+.tl h1{font-size:.92rem;font-weight:700;color:var(--s900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl p{font-size:.65rem;color:var(--s400)}
+.tr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tib{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--s500);position:relative;flex-shrink:0}
+.tib.nt::after{content:'';position:absolute;top:5px;right:5px;width:6px;height:6px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.tu{display:flex;align-items:center;gap:7px;padding:4px 9px 4px 4px;border:1.5px solid var(--s200);border-radius:9px;cursor:pointer;flex-shrink:0}
+.tu-av{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--b600),var(--b400));color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tu span{font-size:.73rem;font-weight:600;color:var(--s700)}
+.content{padding:20px;flex:1;width:100%;min-width:0;overflow-x:hidden}
+
+/* ── PAGE TABS ── */
+.ptabs{display:flex;gap:3px;background:var(--w);border-radius:13px;padding:4px;border:1px solid var(--s200);box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
+.ptabs::-webkit-scrollbar{height:0}
+.ptab{flex:1;min-width:max-content;padding:9px 14px;border-radius:10px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--s400);transition:all .2s;white-space:nowrap}
+.ptab.on{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;box-shadow:0 3px 10px rgba(45,107,196,.28)}
+.ptab:hover:not(.on){color:var(--b500);background:var(--b50)}
+
+/* ── PANELS ── */
+.panel{display:none}
+.panel.on{display:block}
+
+/* ── STAT STRIP ── */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%}
+.sc{background:var(--w);border-radius:12px;padding:14px 16px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
+.si{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.si.bl{background:#eff6ff}.si.gr{background:#f0fdf4}.si.re{background:#fef2f2}.si.am{background:#fffbeb}
+.sd strong{display:block;font-size:1.2rem;font-weight:800;color:var(--s900);line-height:1}
+.sd span{font-size:.62rem;color:var(--s400);font-weight:500;display:block;margin-top:2px}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;width:100%;min-width:0}
+
+/* ── COMPOSE CARD ── */
+.secc{background:var(--w);border-radius:13px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden;width:100%;min-width:0;margin-bottom:14px}
+.secc:last-child{margin-bottom:0}
+.sch{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--s100);gap:8px;flex-wrap:wrap}
+.sch h3{font-size:.84rem;font-weight:700;color:var(--s900)}
+.sch p{font-size:.62rem;color:var(--s400);margin-top:1px}
+.scb{padding:16px 18px}
+
+/* AUDIENCE CHIPS */
+.aud-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.aud-chip{padding:7px 14px;border-radius:99px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.72rem;font-weight:700;color:var(--s500);cursor:pointer;transition:all .18s;white-space:nowrap}
+.aud-chip:hover{border-color:var(--b400);color:var(--b500)}
+.aud-chip.on{background:linear-gradient(135deg,var(--b600),var(--b500));border-color:transparent;color:#fff}
+
+/* COMPOSE TEXTAREA */
+.compose-wrap{position:relative;margin-bottom:12px}
+.compose-ta{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--s200);background:var(--s50);font-family:inherit;font-size:.82rem;color:var(--s900);outline:none;resize:none;transition:border-color .15s;line-height:1.6}
+.compose-ta:focus{border-color:var(--b400);background:var(--w);box-shadow:0 0 0 3px rgba(45,107,196,.09)}
+.compose-ta::placeholder{color:var(--s300)}
+.char-count{position:absolute;bottom:10px;right:12px;font-size:.6rem;color:var(--s400);font-weight:600;pointer-events:none}
+.compose-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.compose-info{font-size:.68rem;color:var(--s400)}
+.compose-info strong{color:var(--s700)}
+.send-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(45,107,196,.3);transition:transform .15s;white-space:nowrap}
+.send-btn:hover{transform:translateY(-1px)}
+.send-btn.green{background:linear-gradient(135deg,var(--grn),#15803d);box-shadow:0 4px 14px rgba(22,163,74,.3)}
+
+/* TEMPLATE CHIPS */
+.template-list{display:flex;gap:7px;flex-wrap:wrap}
+.tpl{padding:6px 12px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.7rem;font-weight:600;color:var(--s600);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tpl:hover{border-color:var(--b400);color:var(--b500);background:var(--b50)}
+
+/* ── LOG TABLE (desktop) ── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
+.log-table{width:100%;border-collapse:collapse;min-width:500px}
+.log-table th{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--s400);padding:9px 16px;text-align:left;background:var(--s50);border-bottom:1px solid var(--s100);white-space:nowrap}
+.log-table td{padding:11px 16px;font-size:.78rem;border-bottom:1px solid var(--s100);color:var(--s700);vertical-align:middle}
+.log-table tr:last-child td{border-bottom:none}
+.log-table tr:hover td{background:var(--s50)}
+.log-av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.log-name-cell{display:flex;align-items:center;gap:9px}
+.log-name{font-size:.78rem;font-weight:700;color:var(--s900)}
+.log-num{font-size:.63rem;color:var(--s400)}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:.62rem;font-weight:700}
+.badge.sent{background:#f0fdf4;color:var(--grn)}
+.badge.failed{background:#fef2f2;color:var(--red)}
+.badge.pending{background:#fffbeb;color:var(--amb)}
+.badge.sms{background:var(--b50);color:var(--b600)}
+.badge.call{background:#f5f3ff;color:var(--pur)}
+
+/* ── MOBILE LOG CARDS ── */
+.mob-log{display:none;flex-direction:column;gap:8px;padding:12px;width:100%}
+.ml-card{background:var(--s50);border-radius:11px;border:1px solid var(--s200);padding:12px 13px;width:100%;overflow:hidden}
+.ml-top{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.ml-info{flex:1;min-width:0}
+.ml-nm{font-size:.82rem;font-weight:700;color:var(--s900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-ph{font-size:.62rem;color:var(--s400);margin-top:1px}
+.ml-body{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ml-row{display:flex;flex-direction:column;gap:1px}
+.ml-lbl{font-size:.58rem;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.4px}
+.ml-val{font-size:.72rem;font-weight:600;color:var(--s700)}
+.ml-msg{margin-top:8px;padding:8px 10px;background:var(--w);border-radius:8px;border:1px solid var(--s200);font-size:.7rem;color:var(--s500);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── RIGHT COL ── */
+.right-col{display:flex;flex-direction:column;gap:14px;min-width:0;width:100%;overflow:hidden}
+
+/* BALANCE CARD */
+.balance-card{background:linear-gradient(135deg,var(--b900),var(--b700));border-radius:13px;padding:18px;position:relative;overflow:hidden;width:100%;min-width:0}
+.balance-card::before{content:'';position:absolute;width:150px;height:150px;top:-40px;right:-30px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);border-radius:50%;pointer-events:none}
+.bc-label{font-size:.6rem;font-weight:700;color:var(--b300);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.bc-val{font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:2px;line-height:1}
+.bc-sub{font-size:.65rem;color:rgba(255,255,255,.5);margin-bottom:14px}
+.bc-row{display:flex;gap:10px}
+.bc-stat{flex:1;background:rgba(255,255,255,.1);border-radius:9px;padding:10px;text-align:center}
+.bc-stat strong{display:block;font-size:.95rem;font-weight:800;color:#fff}
+.bc-stat span{font-size:.58rem;color:rgba(255,255,255,.5);margin-top:2px;display:block}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px}
+.qa{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:11px;border:1.5px solid var(--s200);background:var(--w);cursor:pointer;transition:all .18s;text-align:center}
+.qa:hover{border-color:var(--b400);background:var(--b50);transform:translateY(-2px)}
+.qa .qi{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.qa span{font-size:.67rem;font-weight:700;color:var(--s700);line-height:1.3}
+
+/* CALL STATS */
+.call-stats{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.cs-row{display:flex;align-items:center;gap:10px}
+.cs-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.cs-info{flex:1;min-width:0}
+.cs-label{font-size:.72rem;font-weight:700;color:var(--s700)}
+.cs-bar-bg{width:100%;height:5px;background:var(--s100);border-radius:99px;overflow:hidden;margin-top:4px}
+.cs-bar{height:100%;border-radius:99px}
+.cs-count{font-size:.7rem;font-weight:800;color:var(--s500);flex-shrink:0}
+
+/* FILTERS */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--s100);width:100%}
+.sbox{display:flex;align-items:center;gap:7px;background:var(--s50);border:1.5px solid var(--s200);border-radius:9px;padding:7px 12px;flex:1;min-width:140px;transition:border-color .15s}
+.sbox:focus-within{border-color:var(--b400)}
+.sbox input{border:none;background:transparent;outline:none;font-family:inherit;font-size:.78rem;color:var(--s900);width:100%;min-width:0}
+.sbox input::placeholder{color:var(--s400)}
+.fsel{background:var(--w);border:1.5px solid var(--s200);border-radius:9px;padding:7px 10px;font-family:inherit;font-size:.76rem;font-weight:600;color:var(--s700);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;transition:border-color .15s}
+.fsel:focus{border-color:var(--b400)}
+
+/* AUTO-CALL CONFIG */
+.auto-config{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.ac-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ac-info strong{display:block;font-size:.82rem;font-weight:700;color:var(--s900)}
+.ac-info span{font-size:.65rem;color:var(--s400);margin-top:2px;display:block}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.tslider{position:absolute;cursor:pointer;inset:0;background:var(--s200);border-radius:99px;transition:.25s}
+.tslider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked+.tslider{background:var(--b500)}
+.toggle input:checked+.tslider::before{transform:translateX(20px)}
+.ac-divider{height:1px;background:var(--s100)}
+.ac-message{background:var(--s50);border-radius:10px;padding:12px 14px;border:1.5px solid var(--s200);font-size:.76rem;color:var(--s500);line-height:1.6}
+.ac-message .var{color:var(--b600);font-weight:700;background:var(--b50);padding:1px 5px;border-radius:4px;font-size:.68rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s900);color:#fff;padding:11px 18px;border-radius:11px;font-size:.76rem;font-weight:600;display:flex;align-items:center;gap:8px;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:all .3s cubic-bezier(.175,.885,.32,1.275);white-space:nowrap;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.gr{background:linear-gradient(135deg,#16a34a,#15803d)}
+.toast.re{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1050px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+}
+@media(max-width:720px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-x{display:flex}
+  .hbg{display:flex}
+  .main{margin-left:0;width:100%}
+  .topbar{padding:0 12px;height:54px}
+  .tl p{display:none}
+  .tu span{display:none}
+  .content{padding:12px}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:flex;flex-direction:column;gap:12px}
+  /* hide desktop table, show mobile cards */
+  .table-wrap{display:none}
+  .mob-log{display:flex}
+  .fbar{padding:10px 12px;gap:7px}
+  .sbox{flex:unset;width:100%;min-width:0}
+  .fsel{flex:1;min-width:calc(50% - 4px)}
+  .compose-footer{flex-direction:column;align-items:stretch}
+  .send-btn{justify-content:center}
+}
+@media(max-width:480px){
+  .stats{gap:8px}
+  .sc{padding:10px 11px;gap:8px}
+  .si{width:32px;height:32px;font-size:13px}
+  .sd strong{font-size:1rem}
+  .content{padding:10px}
+  .qa-grid{padding:10px}
+  .bc-row{gap:7px}
+  .bc-stat{padding:8px}
+  .ml-body{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="ov" onclick="closeSB()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">🎓</div>
+    <div class="sb-name"><strong>EduManage Pro</strong><span>School Management System</span></div>
+    <button class="sb-x" onclick="closeSB()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-lbl">Main</span>
+    <a class="sb-a" href="#"><span class="ic">📊</span>Dashboard</a>
+    <a class="sb-a" href="#"><span class="ic">🎓</span>Students</a>
+    <a class="sb-a" href="#"><span class="ic">👨‍🏫</span>Teachers</a>
+    <a class="sb-a" href="#"><span class="ic">📅</span>Attendance</a>
+    <span class="sb-lbl">Academic</span>
+    <a class="sb-a" href="#"><span class="ic">📝</span>Exams</a>
+    <a class="sb-a" href="#"><span class="ic">📋</span>Results</a>
+    <a class="sb-a" href="#"><span class="ic">📚</span>Class Routine</a>
+    <a class="sb-a" href="#"><span class="ic">📖</span>Lecture Plans</a>
+    <a class="sb-a" href="#"><span class="ic">✏️</span>Assignments</a>
+    <span class="sb-lbl">Finance</span>
+    <a class="sb-a" href="#"><span class="ic">💰</span>Fee Collection</a>
+    <a class="sb-a" href="#"><span class="ic">💸</span>Expenses</a>
+    <span class="sb-lbl">Communication</span>
+    <a class="sb-a" href="#"><span class="ic">📢</span>Notices</a>
+    <a class="sb-a on" href="#"><span class="ic">📱</span>SMS / Calls</a>
+    <a class="sb-a" href="#"><span class="ic">⚙️</span>Settings</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-prof">
+      <div class="sb-av">RA</div>
+      <div class="sb-pi"><strong>Admin</strong><span>Super Administrator</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <button class="hbg" onclick="openSB()">☰</button>
+    <div class="tl"><h1>SMS & Calls</h1><p>Awaj Digital Integration</p></div>
+    <div class="tr">
+      <button class="tib nt">🔔</button>
+      <div class="tu"><div class="tu-av">RA</div><span>Rahul Admin</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PAGE TABS -->
+    <div class="ptabs">
+      <button class="ptab on" onclick="switchTab('sms',this)">📱 Send SMS</button>
+      <button class="ptab" onclick="switchTab('call',this)">📞 Auto Call</button>
+      <button class="ptab" onclick="switchTab('log',this)">📋 Message Log</button>
+      <button class="ptab" onclick="switchTab('auto',this)">⚙️ Auto Rules</button>
+    </div>
+
+    <!-- ══ SMS PANEL ══ -->
+    <div class="panel on" id="panel-sms">
+
+      <div class="stats">
+        <div class="sc"><div class="si bl">📱</div><div class="sd"><strong>4,820</strong><span>SMS Balance</span></div></div>
+        <div class="sc"><div class="si gr">✅</div><div class="sd"><strong>1,248</strong><span>Sent Today</span></div></div>
+        <div class="sc"><div class="si re">❌</div><div class="sd"><strong>12</strong><span>Failed</span></div></div>
+        <div class="sc"><div class="si am">⏳</div><div class="sd"><strong>87</strong><span>Queued</span></div></div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <!-- COMPOSE -->
+          <div class="secc">
+            <div class="sch"><div><h3>✍️ Compose SMS</h3><p>Send to students, parents or teachers</p></div></div>
+            <div class="scb">
+              <!-- Audience -->
+              <div style="font-size:.68rem;font-weight:700;color:var(--s500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px">Send To</div>
+              <div class="aud-chips" id="audChips">
+                <div class="aud-chip on" onclick="this.classList.toggle('on')">All Parents</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">All Students</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Fee Due</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Absent Today</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Class X</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Class XI</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Teachers</div>
+              </div>
+              <!-- Templates -->
+              <div style="font-size:.68rem;font-weight:700;color:var(--s500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px">Quick Templates</div>
+              <div class="template-list" style="margin-bottom:14px">
+                <button class="tpl" onclick="setTemplate('fee')">💰 Fee Reminder</button>
+                <button class="tpl" onclick="setTemplate('absent')">❌ Absence Alert</button>
+                <button class="tpl" onclick="setTemplate('exam')">📝 Exam Notice</button>
+                <button class="tpl" onclick="setTemplate('result')">🏆 Result Ready</button>
+                <button class="tpl" onclick="setTemplate('holiday')">🏖 Holiday</button>
+              </div>
+              <!-- Message -->
+              <div class="compose-wrap">
+                <textarea class="compose-ta" id="smsText" rows="5" maxlength="160" placeholder="Type your SMS message here…" oninput="updateChar()"></textarea>
+                <span class="char-count" id="charCount">0/160</span>
+              </div>
+              <div class="compose-footer">
+                <div class="compose-info">Recipients: <strong id="recipCount">1,200</strong> · Est. cost: <strong id="estCost">৳ 360</strong></div>
+                <button class="send-btn" onclick="sendSMS()">📤 Send SMS</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT LOG preview -->
+          <div class="secc">
+            <div class="sch"><div><h3>📋 Recent SMS</h3><p>Last 24 hours</p></div><button style="font-size:.7rem;color:var(--b500);font-weight:600;background:none;border:none;cursor:pointer" onclick="switchTab('log',document.querySelectorAll('.ptab')[2])">View All →</button></div>
+            <div class="table-wrap">
+              <table class="log-table" id="recentTable"></table>
+            </div>
+            <div class="mob-log" id="recentMob"></div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <!-- BALANCE -->
+          <div class="balance-card">
+            <div class="bc-label">📱 SMS Balance</div>
+            <div class="bc-val">4,820</div>
+            <div class="bc-sub">SMS remaining · Awaj Digital</div>
+            <div class="bc-row">
+              <div class="bc-stat"><strong>৳1,200</strong><span>Call Credit</span></div>
+              <div class="bc-stat"><strong>38</strong><span>API Calls Today</span></div>
+            </div>
+          </div>
+
+          <!-- QUICK ACTIONS -->
+          <div class="secc">
+            <div class="sch"><div><h3>Quick Actions</h3></div></div>
+            <div class="qa-grid">
+              <button class="qa" onclick="bulkAction('fee')"><div class="qi" style="background:#fffbeb">💰</div><span>Fee Reminder Blast</span></button>
+              <button class="qa" onclick="bulkAction('absent')"><div class="qi" style="background:#fef2f2">❌</div><span>Absent Alert</span></button>
+              <button class="qa" onclick="bulkAction('exam')"><div class="qi" style="background:#eff6ff">📝</div><span>Exam Reminder</span></button>
+              <button class="qa" onclick="bulkAction('all')"><div class="qi" style="background:#f0fdf4">📢</div><span>Broadcast All</span></button>
+            </div>
+          </div>
+
+          <!-- CALL STATS -->
+          <div class="secc">
+            <div class="sch"><div><h3>Today's Stats</h3><p>April 9, 2026</p></div></div>
+            <div class="call-stats">
+              <div class="cs-row">
+                <div class="cs-icon" style="background:#f0fdf4">📱</div>
+                <div class="cs-info"><div class="cs-label">SMS Delivered</div><div class="cs-bar-bg"><div class="cs-bar" style="width:92%;background:linear-gradient(90deg,var(--grn),#4ade80)"></div></div></div>
+                <span class="cs-count">1,148</span>
+              </div>
+              <div class="cs-row">
+                <div class="cs-icon" style="background:#f5f3ff">📞</div>
+                <div class="cs-info"><div class="cs-label">Calls Completed</div><div class="cs-bar-bg"><div class="cs-bar" style="width:78%;background:linear-gradient(90deg,var(--pur),#a78bfa)"></div></div></div>
+                <span class="cs-count">87</span>
+              </div>
+              <div class="cs-row">
+                <div class="cs-icon" style="background:#fef2f2">❌</div>
+                <div class="cs-info"><div class="cs-label">Failed / Undelivered</div><div class="cs-bar-bg"><div class="cs-bar" style="width:8%;background:linear-gradient(90deg,var(--red),#f87171)"></div></div></div>
+                <span class="cs-count">12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AUTO CALL PANEL ══ -->
+    <div class="panel" id="panel-call">
+      <div class="stats">
+        <div class="sc"><div class="si bl">📞</div><div class="sd"><strong>৳1,200</strong><span>Call Balance</span></div></div>
+        <div class="sc"><div class="si gr">✅</div><div class="sd"><strong>87</strong><span>Calls Today</span></div></div>
+        <div class="sc"><div class="si am">⏳</div><div class="sd"><strong>24</strong><span>Queued</span></div></div>
+        <div class="sc"><div class="si re">❌</div><div class="sd"><strong>5</strong><span>Failed</span></div></div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <!-- CALL COMPOSE -->
+          <div class="secc">
+            <div class="sch"><div><h3>📞 Send Voice Call</h3><p>Auto-call via Awaj Digital</p></div></div>
+            <div class="scb">
+              <div style="font-size:.68rem;font-weight:700;color:var(--s500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px">Call Target</div>
+              <div class="aud-chips">
+                <div class="aud-chip on" onclick="this.classList.toggle('on')">Fee Due Parents</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Absent Parents</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">All Parents</div>
+                <div class="aud-chip" onclick="this.classList.toggle('on')">Low Attendance</div>
+              </div>
+              <div style="font-size:.68rem;font-weight:700;color:var(--s500);margin-bottom:8px;margin-top:4px;text-transform:uppercase;letter-spacing:.3px">Voice Message Template</div>
+              <div class="template-list" style="margin-bottom:14px">
+                <button class="tpl" onclick="setCallTemplate('fee')">💰 Fee Due Call</button>
+                <button class="tpl" onclick="setCallTemplate('absent')">❌ Absence Call</button>
+                <button class="tpl" onclick="setCallTemplate('exam')">📝 Exam Alert Call</button>
+              </div>
+              <div class="ac-message" id="callMsgPreview">
+                আপনার সন্তান <span class="var">[ছাত্রের নাম]</span> এর <span class="var">[মাসের নাম]</span> মাসের বেতন বকেয়া আছে। অনুগ্রহ করে দ্রুত পরিশোধ করুন। যোগাযোগ: <span class="var">01700-000000</span>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+                <button class="send-btn green" onclick="sendCall()" style="flex:1;justify-content:center">📞 Start Auto Call</button>
+                <button class="send-btn" style="background:var(--s100);color:var(--s600);box-shadow:none;flex:1;justify-content:center" onclick="toast_('🎧 Test call sent to your number','gr')">🎧 Test Call</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="balance-card">
+            <div class="bc-label">📞 Call Balance</div>
+            <div class="bc-val">৳1,200</div>
+            <div class="bc-sub">Voice credit · Awaj Digital</div>
+            <div class="bc-row">
+              <div class="bc-stat"><strong>~0.30৳</strong><span>Per Call</span></div>
+              <div class="bc-stat"><strong>~4,000</strong><span>Calls Left</span></div>
+            </div>
+          </div>
+
+          <div class="secc">
+            <div class="sch"><div><h3>Call History</h3><p>Last 7 days</p></div></div>
+            <div class="call-stats">
+              <div class="cs-row"><div class="cs-icon" style="background:#fffbeb">💰</div><div class="cs-info"><div class="cs-label">Fee Reminder Calls</div><div class="cs-bar-bg"><div class="cs-bar" style="width:85%;background:linear-gradient(90deg,var(--amb),#fbbf24)"></div></div></div><span class="cs-count">312</span></div>
+              <div class="cs-row"><div class="cs-icon" style="background:#fef2f2">❌</div><div class="cs-info"><div class="cs-label">Absence Alert Calls</div><div class="cs-bar-bg"><div class="cs-bar" style="width:60%;background:linear-gradient(90deg,var(--red),#f87171)"></div></div></div><span class="cs-count">218</span></div>
+              <div class="cs-row"><div class="cs-icon" style="background:#f5f3ff">📝</div><div class="cs-info"><div class="cs-label">Exam Notice Calls</div><div class="cs-bar-bg"><div class="cs-bar" style="width:40%;background:linear-gradient(90deg,var(--pur),#a78bfa)"></div></div></div><span class="cs-count">145</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LOG PANEL ══ -->
+    <div class="panel" id="panel-log">
+      <div class="secc">
+        <div class="sch"><div><h3>📋 Message Log</h3><p>All sent messages</p></div><button class="sch-btn" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--s600)" onclick="toast_('📥 Exporting log…','gr')">📥 Export</button></div>
+        <div class="fbar">
+          <div class="sbox"><span style="font-size:13px;color:var(--s400)">🔍</span><input type="text" id="logSrch" placeholder="Search name or number…" oninput="renderLog()"></div>
+          <select class="fsel" id="logType" onchange="renderLog()">
+            <option value="">All Types</option>
+            <option value="sms">SMS</option>
+            <option value="call">Call</option>
+          </select>
+          <select class="fsel" id="logStatus" onchange="renderLog()">
+            <option value="">All Status</option>
+            <option value="sent">Sent</option>
+            <option value="failed">Failed</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="log-table">
+            <thead><tr><th>Recipient</th><th>Type</th><th>Message</th><th>Time</th><th>Status</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+        <div class="mob-log" id="logMob"></div>
+      </div>
+    </div>
+
+    <!-- ══ AUTO RULES PANEL ══ -->
+    <div class="panel" id="panel-auto">
+      <div class="secc">
+        <div class="sch"><div><h3>⚙️ Automatic Rules</h3><p>Set up automatic SMS & call triggers</p></div><button class="sch-btn" style="padding:7px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer" onclick="toast_('⚙️ Rules saved!','gr')">💾 Save Rules</button></div>
+        <div class="auto-config">
+          <div class="ac-row">
+            <div class="ac-info"><strong>🔴 Absence Auto-Alert</strong><span>Send SMS to parent when student is marked absent</span></div>
+            <label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label>
+          </div>
+          <div class="ac-message">
+            প্রিয় অভিভাবক, আপনার সন্তান <span class="var">[ছাত্রের নাম]</span> আজ <span class="var">[তারিখ]</span> তারিখে অনুপস্থিত ছিল। — UBIQUE Academy
+          </div>
+          <div class="ac-divider"></div>
+
+          <div class="ac-row">
+            <div class="ac-info"><strong>💰 Fee Due Reminder</strong><span>Auto-SMS 3 days before fee deadline</span></div>
+            <label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label>
+          </div>
+          <div class="ac-message">
+            প্রিয় অভিভাবক, <span class="var">[ছাত্রের নাম]</span> এর <span class="var">[মাস]</span> মাসের বেতন <span class="var">[তারিখ]</span> তারিখের মধ্যে পরিশোধ করুন। — UBIQUE
+          </div>
+          <div class="ac-divider"></div>
+
+          <div class="ac-row">
+            <div class="ac-info"><strong>📞 Fee Due Auto-Call</strong><span>Voice call to parents with outstanding fees</span></div>
+            <label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label>
+          </div>
+          <div class="ac-divider"></div>
+
+          <div class="ac-row">
+            <div class="ac-info"><strong>📊 Low Attendance Warning</strong><span>Alert when attendance drops below 75%</span></div>
+            <label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label>
+          </div>
+          <div class="ac-divider"></div>
+
+          <div class="ac-row">
+            <div class="ac-info"><strong>🏆 Result Published Alert</strong><span>Notify parents when exam results are published</span></div>
+            <label class="toggle"><input type="checkbox"><span class="tslider"></span></label>
+          </div>
+          <div class="ac-divider"></div>
+
+          <div class="ac-row">
+            <div class="ac-info"><strong>📅 Exam Reminder (1 day before)</strong><span>Remind students about upcoming exams</span></div>
+            <label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const colors = ['#2d6bc4','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2','#be185d','#059669'];
+const names = ['Arif Rahman','Sumaiya Mim','Tanvir Hossain','Nusrat Khanam','Rahim Islam','Fatema Akter','Karim Uddin','Ritu Das','Imran Sheikh','Ayasha Begum','Nazmul Haque','Shahida Parvin'];
+const types_ = ['sms','sms','call','sms','call','sms','sms','call','sms','sms','call','sms'];
+const statuses = ['sent','sent','sent','failed','sent','sent','pending','sent','sent','failed','sent','sent'];
+const msgs = [
+  'আপনার সন্তানের ফেব্রুয়ারি মাসের বেতন বকেয়া আছে।',
+  'আপনার সন্তান আজ অনুপস্থিত ছিল।',
+  'Fee due voice call sent.',
+  'পরীক্ষার ফলাফল প্রকাশিত হয়েছে।',
+  'Absence alert call sent.',
+  'আগামীকাল Physics পরীক্ষা। ভালোভাবে প্রস্তুতি নিন।',
+  'এপ্রিল মাসের বেতন পরিশোধ করুন।',
+  'Low attendance alert call.',
+  'Annual Sports Day — April 18, 2026.',
+  'আপনার সন্তান আজ অনুপস্থিত ছিল।',
+  'Result published call.',
+  'পরীক্ষার শিডিউল প্রকাশিত হয়েছে।',
+];
+const times = ['2 min ago','15 min ago','1 hr ago','2 hrs ago','3 hrs ago','4 hrs ago','5 hrs ago','6 hrs ago','Yesterday 4pm','Yesterday 2pm','Yesterday 10am','2 days ago'];
+
+const logData = names.map((n,i) => ({
+  name: n,
+  phone: '01'+Math.floor(700000000+Math.random()*100000000),
+  type: types_[i],
+  msg: msgs[i],
+  time: times[i],
+  status: statuses[i],
+  color: colors[i%8],
+  initials: n.split(' ').map(w=>w[0]).join('').slice(0,2)
+}));
+
+let filteredLog = [...logData];
+
+// ── TEMPLATES ──
+const tpls = {
+  fee: 'প্রিয় অভিভাবক, আপনার সন্তানের এপ্রিল মাসের বেতন বকেয়া আছে। অনুগ্রহ করে ১৫ এপ্রিলের মধ্যে পরিশোধ করুন। বিস্তারিত: 01700-000000 — UBIQUE Academy',
+  absent: 'প্রিয় অভিভাবক, আপনার সন্তান আজ বিদ্যালয়ে অনুপস্থিত ছিল। জানাতে ফোন করুন: 01700-000000 — UBIQUE Academy',
+  exam: 'আগামীকাল পরীক্ষা। সময়মতো উপস্থিত থাকুন ও পরিচয়পত্র সাথে রাখুন। — UBIQUE Academy',
+  result: 'আপনার সন্তানের পরীক্ষার ফলাফল প্রকাশিত হয়েছে। Student Portal এ দেখুন। — UBIQUE Academy',
+  holiday: 'ঈদুল ফিতর উপলক্ষে ২৮ এপ্রিল থেকে ৫ মে পর্যন্ত বিদ্যালয় বন্ধ থাকবে। — UBIQUE Academy',
+};
+const callTpls = {
+  fee: 'আপনার সন্তান <span class="var">[ছাত্রের নাম]</span> এর <span class="var">[মাসের নাম]</span> মাসের বেতন বকেয়া আছে। অনুগ্রহ করে দ্রুত পরিশোধ করুন। যোগাযোগ: <span class="var">01700-000000</span>',
+  absent: 'আপনার সন্তান <span class="var">[ছাত্রের নাম]</span> আজ <span class="var">[তারিখ]</span> তারিখে অনুপস্থিত ছিল। বিস্তারিত জানতে বিদ্যালয়ে যোগাযোগ করুন।',
+  exam: 'আগামীকাল <span class="var">[বিষয়]</span> পরীক্ষা। আপনার সন্তানকে সময়মতো প্রস্তুত করুন। — UBIQUE Academy',
+};
+
+function setTemplate(key) {
+  document.getElementById('smsText').value = tpls[key] || '';
+  updateChar();
+}
+function setCallTemplate(key) {
+  document.getElementById('callMsgPreview').innerHTML = callTpls[key] || '';
+}
+
+// ── CHAR COUNT ──
+function updateChar() {
+  const len = document.getElementById('smsText').value.length;
+  document.getElementById('charCount').textContent = len + '/160';
+}
+
+// ── SEND ──
+function sendSMS() {
+  const msg = document.getElementById('smsText').value.trim();
+  if (!msg) { toast_('⚠️ Please write a message first', 're'); return; }
+  toast_('📤 SMS sent to 1,200 recipients!', 'gr');
+  document.getElementById('smsText').value = '';
+  updateChar();
+}
+function sendCall() {
+  toast_('📞 Auto-call started for 87 recipients!', 'gr');
+}
+function bulkAction(type) {
+  const msgs = {
+    fee: '💰 Fee reminder SMS sent to 87 due students!',
+    absent: '❌ Absence alert sent to 42 parents!',
+    exam: '📝 Exam reminder sent to all students!',
+    all: '📢 Broadcast sent to 1,248 students!'
+  };
+  toast_(msgs[type] || 'Done!', 'gr');
+}
+
+// ── LOG RENDER ──
+function renderLogTable(list) {
+  const tbody = document.getElementById('logBody');
+  if (!tbody) return;
+  tbody.innerHTML = list.map(l => `
+    <tr>
+      <td>
+        <div class="log-name-cell">
+          <div class="log-av" style="background:${l.color}">${l.initials}</div>
+          <div><div class="log-name">${l.name}</div><div class="log-num">${l.phone}</div></div>
+        </div>
+      </td>
+      <td><span class="badge ${l.type}">${l.type === 'sms' ? '📱 SMS' : '📞 Call'}</span></td>
+      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem;color:var(--s500)">${l.msg}</td>
+      <td style="font-size:.7rem;color:var(--s400);white-space:nowrap">${l.time}</td>
+      <td><span class="badge ${l.status}">${l.status === 'sent' ? '✓ Sent' : l.status === 'failed' ? '✗ Failed' : '⏳ Pending'}</span></td>
+    </tr>`).join('');
+}
+
+function renderLogMob(list, elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = list.map(l => `
+    <div class="ml-card">
+      <div class="ml-top">
+        <div class="log-av" style="background:${l.color};width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">${l.initials}</div>
+        <div class="ml-info">
+          <div class="ml-nm">${l.name}</div>
+          <div class="ml-ph">${l.phone}</div>
+        </div>
+        <span class="badge ${l.status}">${l.status === 'sent' ? '✓' : l.status === 'failed' ? '✗' : '⏳'}</span>
+      </div>
+      <div class="ml-body">
+        <div class="ml-row"><div class="ml-lbl">Type</div><div class="ml-val">${l.type === 'sms' ? '📱 SMS' : '📞 Call'}</div></div>
+        <div class="ml-row"><div class="ml-lbl">Time</div><div class="ml-val">${l.time}</div></div>
+      </div>
+      <div class="ml-msg">${l.msg}</div>
+    </div>`).join('');
+}
+
+function renderLog() {
+  const q = (document.getElementById('logSrch')?.value || '').toLowerCase();
+  const type = document.getElementById('logType')?.value || '';
+  const status = document.getElementById('logStatus')?.value || '';
+  filteredLog = logData.filter(l => {
+    if (q && !l.name.toLowerCase().includes(q) && !l.phone.includes(q)) return false;
+    if (type && l.type !== type) return false;
+    if (status && l.status !== status) return false;
+    return true;
+  });
+  renderLogTable(filteredLog);
+  renderLogMob(filteredLog, 'logMob');
+}
+
+// ── TAB SWITCH ──
+function switchTab(id, btn) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('panel-' + id).classList.add('on');
+  if (id === 'log') renderLog();
+}
+
+// ── TOAST ──
+let tt;
+function toast_(msg, type = '') {
+  clearTimeout(tt);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (type ? ' ' + type : '');
+  requestAnimationFrame(() => t.classList.add('show'));
+  tt = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── SIDEBAR ──
+function openSB() { document.getElementById('sb').classList.add('open'); document.getElementById('ov').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeSB() { document.getElementById('sb').classList.remove('open'); document.getElementById('ov').classList.remove('open'); document.body.style.overflow = ''; }
+window.addEventListener('resize', () => { if (window.innerWidth > 720) closeSB(); });
+
+// ── INIT ──
+// Render recent SMS log in SMS panel
+const recentData = logData.slice(0, 6);
+function renderRecentTable() {
+  const el = document.getElementById('recentTable');
+  if (!el) return;
+  el.innerHTML = `<thead><tr><th>Recipient</th><th>Type</th><th>Message</th><th>Time</th><th>Status</th></tr></thead>
+  <tbody>${recentData.map(l => `
+    <tr>
+      <td><div class="log-name-cell"><div class="log-av" style="background:${l.color}">${l.initials}</div><div><div class="log-name">${l.name}</div><div class="log-num">${l.phone}</div></div></div></td>
+      <td><span class="badge ${l.type}">${l.type === 'sms' ? '📱 SMS' : '📞 Call'}</span></td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem;color:var(--s500)">${l.msg}</td>
+      <td style="font-size:.7rem;color:var(--s400);white-space:nowrap">${l.time}</td>
+      <td><span class="badge ${l.status}">${l.status === 'sent' ? '✓ Sent' : l.status === 'failed' ? '✗ Failed' : '⏳'}</span></td>
+    </tr>`).join('')}</tbody>`;
+}
+function renderRecentMob() {
+  renderLogMob(recentData, 'recentMob');
+}
+renderRecentTable();
+renderRecentMob();
+</script>
+</body>
+</html>

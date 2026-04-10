@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EduManage Pro — Notices</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a;
+     display:flex;min-height:100vh;overflow-x:hidden;width:100%;max-width:100vw}
+
+:root{
+  --b950:#0a1628;--b900:#0f2142;--b700:#1d407e;--b600:#2554a0;
+  --b500:#2d6bc4;--b400:#4c87e0;--b300:#7aaff0;--b50:#eff6ff;
+  --gold:#c9a84c;--glt:#f0d990;
+  --w:#fff;--s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;
+  --s400:#94a3b8;--s500:#64748b;--s700:#334155;--s900:#0f172a;
+  --grn:#16a34a;--red:#dc2626;--amb:#d97706;--pur:#7c3aed;
+  --sw:260px;
+}
+
+/* ── OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.overlay.open{display:block}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);height:100vh;background:var(--b950);display:flex;flex-direction:column;
+         position:fixed;left:0;top:0;z-index:100;transition:transform .28s ease;overflow-y:auto}
+.sb-brand{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--b500),var(--b400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-name strong{font-size:.83rem;font-weight:800;color:#fff;display:block}
+.sb-name span{font-size:.6rem;color:var(--b300);display:block}
+.sb-x{display:none;margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+.sb-nav{padding:8px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
+.sb-lbl{font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:10px 8px 4px;display:block}
+.sb-a{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;color:rgba(255,255,255,.5);font-size:.79rem;font-weight:500;text-decoration:none;transition:all .15s}
+.sb-a:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.sb-a.on{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-weight:700}
+.sb-a .ic{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sb-a.on .ic{background:rgba(255,255,255,.18)}
+.sb-foot{padding:10px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-prof{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;cursor:pointer}
+.sb-prof:hover{background:rgba(255,255,255,.07)}
+.sb-av{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--glt));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--b950);flex-shrink:0}
+.sb-pi strong{font-size:.74rem;font-weight:700;color:#fff;display:block}
+.sb-pi span{font-size:.6rem;color:var(--s400)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-width:0;width:calc(100% - var(--sw));overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{height:60px;background:var(--w);border-bottom:1px solid var(--s200);display:flex;align-items:center;gap:10px;padding:0 20px;position:sticky;top:0;z-index:50;box-shadow:0 1px 6px rgba(0,0,0,.05);width:100%;overflow:hidden}
+.hbg{display:none;background:none;border:1.5px solid var(--s200);border-radius:8px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--s500);flex-shrink:0}
+.tl{flex:1;min-width:0}
+.tl h1{font-size:.92rem;font-weight:700;color:var(--s900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl p{font-size:.65rem;color:var(--s400)}
+.tr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tib{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--s200);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--s500);position:relative;flex-shrink:0}
+.tib.nt::after{content:'';position:absolute;top:5px;right:5px;width:6px;height:6px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.tu{display:flex;align-items:center;gap:7px;padding:4px 9px 4px 4px;border:1.5px solid var(--s200);border-radius:9px;cursor:pointer;flex-shrink:0}
+.tu-av{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--b600),var(--b400));color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tu span{font-size:.73rem;font-weight:600;color:var(--s700)}
+
+/* ── CONTENT ── */
+.content{padding:20px;flex:1;width:100%;min-width:0;overflow-x:hidden}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.ph h2{font-size:1.15rem;font-weight:800;color:var(--s900)}
+.ph p{font-size:.7rem;color:var(--s400);margin-top:2px}
+.pbtn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(45,107,196,.3);transition:transform .15s;white-space:nowrap;flex-shrink:0}
+.pbtn:hover{transform:translateY(-1px)}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%}
+.sc{background:var(--w);border-radius:12px;padding:14px 16px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden}
+.si{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.si.bl{background:#eff6ff}.si.re{background:#fef2f2}.si.gr{background:#f0fdf4}.si.am{background:#fffbeb}
+.sd strong{display:block;font-size:1.2rem;font-weight:800;color:var(--s900);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd span{font-size:.62rem;color:var(--s400);font-weight:500;display:block;margin-top:2px}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;width:100%;min-width:0}
+
+/* ── LEFT ── */
+.left-col{min-width:0;width:100%;overflow:hidden}
+
+/* FILTER BAR */
+.fbar{margin-bottom:14px;display:flex;flex-direction:column;gap:8px;width:100%}
+.sbox{display:flex;align-items:center;gap:7px;background:var(--w);border:1.5px solid var(--s200);border-radius:10px;padding:8px 13px;width:100%;transition:border-color .15s}
+.sbox:focus-within{border-color:var(--b400)}
+.sbox input{border:none;background:transparent;outline:none;font-family:inherit;font-size:.79rem;color:var(--s900);width:100%;min-width:0}
+.sbox input::placeholder{color:var(--s400)}
+.chips{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
+.chips::-webkit-scrollbar{height:0}
+.chips-inner{display:flex;gap:6px;width:max-content;padding-bottom:2px}
+.chip{padding:7px 15px;border-radius:99px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.73rem;font-weight:700;color:var(--s500);cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
+.chip:hover{border-color:var(--b400);color:var(--b500)}
+.chip.on{background:linear-gradient(135deg,var(--b600),var(--b500));border-color:transparent;color:#fff}
+
+/* PINNED BANNER */
+.pinned{background:linear-gradient(135deg,var(--b900),var(--b700));border-radius:13px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;width:100%;overflow:hidden;position:relative}
+.pinned::before{content:'';position:absolute;width:150px;height:150px;top:-50px;right:-30px;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);border-radius:50%;pointer-events:none}
+.pin-ic{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.pin-txt{flex:1;min-width:0;overflow:hidden}
+.pin-lbl{font-size:.57rem;font-weight:700;color:var(--b300);letter-spacing:.7px;text-transform:uppercase;margin-bottom:2px}
+.pin-title{font-size:.85rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.pin-sub{font-size:.62rem;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin-top:2px}
+
+/* NOTICE CARDS */
+.nlist{display:flex;flex-direction:column;gap:11px;width:100%}
+.nc{background:var(--w);border-radius:13px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden;width:100%;min-width:0}
+.nc-bar{height:3px}
+.nc-bar.general{background:linear-gradient(90deg,var(--b500),var(--b400))}
+.nc-bar.urgent{background:linear-gradient(90deg,var(--red),#f87171)}
+.nc-bar.event{background:linear-gradient(90deg,var(--grn),#4ade80)}
+.nc-bar.exam{background:linear-gradient(90deg,var(--pur),#a78bfa)}
+.nc-bar.holiday{background:linear-gradient(90deg,var(--amb),#fbbf24)}
+.nc-body{padding:14px 16px}
+.nc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.nc-title{font-size:.88rem;font-weight:800;color:var(--s900);line-height:1.3;flex:1;min-width:0;word-break:break-word}
+.nc-badge{padding:3px 9px;border-radius:99px;font-size:.58rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+.nc-badge.general{background:#eff6ff;color:var(--b600)}
+.nc-badge.urgent{background:#fef2f2;color:var(--red)}
+.nc-badge.event{background:#f0fdf4;color:var(--grn)}
+.nc-badge.exam{background:#f5f3ff;color:var(--pur)}
+.nc-badge.holiday{background:#fffbeb;color:var(--amb)}
+.nc-txt{font-size:.76rem;color:var(--s500);line-height:1.6;margin-bottom:11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.nc-meta{display:flex;flex-wrap:wrap;gap:10px}
+.nc-mi{font-size:.62rem;color:var(--s400);font-weight:500;white-space:nowrap}
+.nc-acts{display:flex;gap:4px;flex-shrink:0}
+.na{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--s200);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--s400);transition:all .15s}
+.na:hover{border-color:var(--b400);color:var(--b500);background:var(--b50)}
+.na.r:hover{border-color:#fecaca;color:var(--red);background:#fef2f2}
+
+/* ── RIGHT COL ── */
+.right-col{display:flex;flex-direction:column;gap:14px;min-width:0;width:100%;overflow:hidden}
+
+/* SEC CARD */
+.secc{background:var(--w);border-radius:13px;border:1px solid var(--s200);box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden;width:100%;min-width:0}
+.sch{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--s100);gap:8px}
+.sch h3{font-size:.82rem;font-weight:700;color:var(--s900)}
+.sch p{font-size:.6rem;color:var(--s400);margin-top:1px}
+
+/* CHANNELS */
+.ch-list{padding:10px 14px;display:flex;flex-direction:column;gap:7px;width:100%}
+.ch-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;border:1.5px solid var(--s200);background:var(--s50);cursor:pointer;transition:all .15s;width:100%;min-width:0;overflow:hidden}
+.ch-item:hover,.ch-item.on{border-color:var(--b400);background:var(--b50)}
+.ch-ic{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ch-inf{flex:1;min-width:0;overflow:hidden}
+.ch-n{font-size:.76rem;font-weight:700;color:var(--s800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-s{font-size:.6rem;color:var(--s400);margin-top:1px}
+.ch-ck{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--s300);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:transparent;flex-shrink:0;transition:all .15s}
+.ch-item.on .ch-ck{background:var(--b500);border-color:var(--b500);color:#fff}
+
+/* AUDIENCE */
+.aud-list{padding:10px 14px;display:flex;flex-direction:column;gap:6px;width:100%}
+.aud-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--s200);background:var(--s50);cursor:pointer;transition:all .15s;width:100%;min-width:0;overflow:hidden}
+.aud-item:hover,.aud-item.on{border-color:var(--b400);background:var(--b50)}
+.aud-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.aud-n{font-size:.74rem;font-weight:600;color:var(--s700);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aud-ct{font-size:.6rem;font-weight:700;color:var(--s400);flex-shrink:0}
+.aud-ck{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--s300);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:transparent;flex-shrink:0;transition:all .15s}
+.aud-item.on .aud-ck{background:var(--b500);border-color:var(--b500);color:#fff}
+
+/* ACTIVITY */
+.act-list{padding:4px 14px 12px;display:flex;flex-direction:column}
+.act-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--s100)}
+.act-row:last-child{border-bottom:none}
+.act-d{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.act-t strong{display:block;font-size:.74rem;font-weight:600;color:var(--s800);line-height:1.3}
+.act-t span{font-size:.6rem;color:var(--s400);margin-top:1px;display:block}
+
+/* EMPTY */
+.empty{display:none;flex-direction:column;align-items:center;padding:40px 16px;text-align:center}
+.empty.show{display:flex}
+.empty h3{font-size:.88rem;font-weight:700;color:var(--s400);margin:10px 0 5px}
+.empty p{font-size:.7rem;color:var(--s300)}
+
+/* ── MODAL ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--w);border-radius:18px 18px 0 0;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.15);animation:su .25s ease}
+@keyframes su{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--s100);position:sticky;top:0;background:var(--w);z-index:1}
+.mh h3{font-size:.9rem;font-weight:700;color:var(--s900)}
+.mx{width:28px;height:28px;border-radius:7px;background:var(--s100);border:none;cursor:pointer;font-size:13px;color:var(--s500)}
+.mb{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.mf{display:flex;flex-direction:column;gap:5px;width:100%}
+.mf label{font-size:.66rem;font-weight:700;color:var(--s600);letter-spacing:.2px}
+.mf input,.mf select,.mf textarea{width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--s200);background:var(--s50);font-family:inherit;font-size:.8rem;font-weight:500;color:var(--s900);outline:none;transition:border-color .15s;resize:none;appearance:none;-webkit-appearance:none}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--b400);background:#fff}
+.mf input::placeholder,.mf textarea::placeholder{color:var(--s300)}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.tbtns{display:flex;gap:5px;flex-wrap:wrap}
+.tbtn{padding:6px 12px;border-radius:7px;border:1.5px solid var(--s200);background:var(--w);font-family:inherit;font-size:.7rem;font-weight:700;color:var(--s500);cursor:pointer;transition:all .15s}
+.tbtn.sg{background:#eff6ff;border-color:var(--b500);color:var(--b600)}
+.tbtn.su{background:#fef2f2;border-color:var(--red);color:var(--red)}
+.tbtn.se{background:#f0fdf4;border-color:var(--grn);color:var(--grn)}
+.tbtn.sx{background:#f5f3ff;border-color:var(--pur);color:var(--pur)}
+.tbtn.sh{background:#fffbeb;border-color:var(--amb);color:var(--amb)}
+.mchks{display:flex;flex-wrap:wrap;gap:6px}
+.mck{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;border:1.5px solid var(--s200);font-size:.7rem;font-weight:700;color:var(--s600);cursor:pointer;transition:all .15s;user-select:none}
+.mck.on{background:var(--b50);border-color:var(--b500);color:var(--b600)}
+.mck input{display:none}
+.mfoot{padding:12px 18px 20px;display:flex;gap:8px}
+.mfb{flex:1;padding:11px;border-radius:10px;border:none;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s}
+.mfb.cn{background:var(--s100);color:var(--s600)}
+.mfb.sv{background:linear-gradient(135deg,var(--b600),var(--b500));color:#fff;box-shadow:0 4px 14px rgba(45,107,196,.25)}
+.mfb.sv:hover{transform:translateY(-1px)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s900);color:#fff;padding:11px 18px;border-radius:11px;font-size:.76rem;font-weight:600;display:flex;align-items:center;gap:8px;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:all .3s cubic-bezier(.175,.885,.32,1.275);white-space:nowrap;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.gr{background:linear-gradient(135deg,#16a34a,#15803d)}
+.toast.re{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1050px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+}
+@media(max-width:720px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-x{display:flex}
+  .hbg{display:flex}
+  .main{margin-left:0;width:100%}
+  .topbar{padding:0 12px;height:54px}
+  .tl p{display:none}
+  .tu span{display:none}
+  .content{padding:12px}
+  .layout{grid-template-columns:1fr}
+  .right-col{display:flex;flex-direction:column;gap:12px}
+  .ph{flex-direction:column}
+  .pbtn{width:100%;justify-content:center}
+  .mgrid{grid-template-columns:1fr}
+}
+@media(max-width:440px){
+  .stats{gap:8px}
+  .sc{padding:11px 12px;gap:8px}
+  .si{width:34px;height:34px;font-size:14px}
+  .sd strong{font-size:1rem}
+  .content{padding:10px}
+  .nc-foot{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="ov" onclick="closeSB()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">🎓</div>
+    <div class="sb-name"><strong>EduManage Pro</strong><span>School Management System</span></div>
+    <button class="sb-x" onclick="closeSB()">✕</button>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-lbl">Main</span>
+    <a class="sb-a" href="#"><span class="ic">📊</span>Dashboard</a>
+    <a class="sb-a" href="#"><span class="ic">🎓</span>Students</a>
+    <a class="sb-a" href="#"><span class="ic">👨‍🏫</span>Teachers</a>
+    <a class="sb-a" href="#"><span class="ic">📅</span>Attendance</a>
+    <span class="sb-lbl">Academic</span>
+    <a class="sb-a" href="#"><span class="ic">📝</span>Exams</a>
+    <a class="sb-a" href="#"><span class="ic">📋</span>Results</a>
+    <a class="sb-a" href="#"><span class="ic">📚</span>Class Routine</a>
+    <a class="sb-a" href="#"><span class="ic">📖</span>Lecture Plans</a>
+    <a class="sb-a" href="#"><span class="ic">✏️</span>Assignments</a>
+    <span class="sb-lbl">Finance</span>
+    <a class="sb-a" href="#"><span class="ic">💰</span>Fee Collection</a>
+    <a class="sb-a" href="#"><span class="ic">💸</span>Expenses</a>
+    <span class="sb-lbl">Communication</span>
+    <a class="sb-a on" href="#"><span class="ic">📢</span>Notices</a>
+    <a class="sb-a" href="#"><span class="ic">📱</span>SMS / Calls</a>
+    <a class="sb-a" href="#"><span class="ic">⚙️</span>Settings</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-prof">
+      <div class="sb-av">RA</div>
+      <div class="sb-pi"><strong>Admin</strong><span>Super Administrator</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <button class="hbg" onclick="openSB()">☰</button>
+    <div class="tl"><h1>Notice Board</h1><p>All announcements & communications</p></div>
+    <div class="tr">
+      <button class="tib nt">🔔</button>
+      <div class="tu"><div class="tu-av">RA</div><span>Rahul Admin</span></div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="ph">
+      <div><h2>Notice Board</h2><p>Manage and send announcements to students, teachers &amp; parents</p></div>
+      <button class="pbtn" onclick="openModal()">📢 Post Notice</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="sc"><div class="si bl">📢</div><div class="sd"><strong>24</strong><span>Total Notices</span></div></div>
+      <div class="sc"><div class="si re">🚨</div><div class="sd"><strong>3</strong><span>Urgent</span></div></div>
+      <div class="sc"><div class="si gr">✅</div><div class="sd"><strong>18</strong><span>Active</span></div></div>
+      <div class="sc"><div class="si am">📱</div><div class="sd"><strong>1,248</strong><span>SMS Sent Today</span></div></div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+      <!-- LEFT -->
+      <div class="left-col">
+        <!-- FILTERS -->
+        <div class="fbar">
+          <div class="sbox">
+            <span style="font-size:13px;color:var(--s400)">🔍</span>
+            <input type="text" id="srch" placeholder="Search notices…" oninput="applyFilter()">
+          </div>
+          <div class="chips">
+            <div class="chips-inner" id="chipRow">
+              <button class="chip on" onclick="setFilter('',this)">All</button>
+              <button class="chip" onclick="setFilter('urgent',this)">🚨 Urgent</button>
+              <button class="chip" onclick="setFilter('general',this)">📋 General</button>
+              <button class="chip" onclick="setFilter('exam',this)">📝 Exam</button>
+              <button class="chip" onclick="setFilter('event',this)">🎉 Event</button>
+              <button class="chip" onclick="setFilter('holiday',this)">🏖 Holiday</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PINNED -->
+        <div class="pinned">
+          <div class="pin-ic">📌</div>
+          <div class="pin-txt">
+            <div class="pin-lbl">📌 Pinned Notice</div>
+            <span class="pin-title" id="pinTitle">Annual Sports Day — April 18, 2026</span>
+            <span class="pin-sub" id="pinSub">All students must participate · Posted by Admin</span>
+          </div>
+        </div>
+
+        <!-- NOTICES -->
+        <div class="nlist" id="nlist"></div>
+        <div class="empty" id="empty">
+          <div style="font-size:2.2rem;opacity:.3">📭</div>
+          <h3>No notices found</h3>
+          <p>Try adjusting your search or filter</p>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-col">
+
+        <!-- CHANNELS -->
+        <div class="secc">
+          <div class="sch"><div><h3>Send Channels</h3><p>Choose how to notify</p></div></div>
+          <div class="ch-list">
+            <div class="ch-item on" onclick="this.classList.toggle('on');toggle_ck(this)">
+              <div class="ch-ic" style="background:#f0fdf4">📱</div>
+              <div class="ch-inf"><div class="ch-n">SMS</div><div class="ch-s">Send to all parents</div></div>
+              <div class="ch-ck">✓</div>
+            </div>
+            <div class="ch-item" onclick="this.classList.toggle('on');toggle_ck(this)">
+              <div class="ch-ic" style="background:#eff6ff">🔔</div>
+              <div class="ch-inf"><div class="ch-n">Push Notification</div><div class="ch-s">App notification</div></div>
+              <div class="ch-ck"></div>
+            </div>
+            <div class="ch-item" onclick="this.classList.toggle('on');toggle_ck(this)">
+              <div class="ch-ic" style="background:#fffbeb">📧</div>
+              <div class="ch-inf"><div class="ch-n">Email</div><div class="ch-s">Send via email</div></div>
+              <div class="ch-ck"></div>
+            </div>
+            <div class="ch-item on" onclick="this.classList.toggle('on');toggle_ck(this)">
+              <div class="ch-ic" style="background:#f5f3ff">📋</div>
+              <div class="ch-inf"><div class="ch-n">Notice Board</div><div class="ch-s">Visible in app</div></div>
+              <div class="ch-ck">✓</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AUDIENCE -->
+        <div class="secc">
+          <div class="sch"><div><h3>Target Audience</h3><p>Who sees this notice</p></div></div>
+          <div class="aud-list">
+            <div class="aud-item on" onclick="this.classList.toggle('on');toggle_ack(this)">
+              <span class="aud-dot" style="background:var(--b500)"></span>
+              <span class="aud-n">All Students</span><span class="aud-ct">1,248</span>
+              <div class="aud-ck">✓</div>
+            </div>
+            <div class="aud-item on" onclick="this.classList.toggle('on');toggle_ack(this)">
+              <span class="aud-dot" style="background:var(--grn)"></span>
+              <span class="aud-n">All Parents</span><span class="aud-ct">1,200</span>
+              <div class="aud-ck">✓</div>
+            </div>
+            <div class="aud-item" onclick="this.classList.toggle('on');toggle_ack(this)">
+              <span class="aud-dot" style="background:var(--pur)"></span>
+              <span class="aud-n">Teachers Only</span><span class="aud-ct">38</span>
+              <div class="aud-ck"></div>
+            </div>
+            <div class="aud-item" onclick="this.classList.toggle('on');toggle_ack(this)">
+              <span class="aud-dot" style="background:var(--amb)"></span>
+              <span class="aud-n">Class X Only</span><span class="aud-ct">186</span>
+              <div class="aud-ck"></div>
+            </div>
+            <div class="aud-item" onclick="this.classList.toggle('on');toggle_ack(this)">
+              <span class="aud-dot" style="background:var(--red)"></span>
+              <span class="aud-n">Class XI – Science</span><span class="aud-ct">94</span>
+              <div class="aud-ck"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY -->
+        <div class="secc">
+          <div class="sch"><div><h3>Recent Activity</h3><p>Last actions</p></div></div>
+          <div class="act-list">
+            <div class="act-row"><div class="act-d" style="background:var(--b500)"></div><div class="act-t"><strong>Sports Day notice posted</strong><span>SMS sent to 1,248 · 2 hrs ago</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--red)"></div><div class="act-t"><strong>Urgent: Fee deadline reminder</strong><span>Sent to 87 due students · 5 hrs ago</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--grn)"></div><div class="act-t"><strong>PTM notice published</strong><span>Push notification sent · Yesterday</span></div></div>
+            <div class="act-row"><div class="act-d" style="background:var(--amb)"></div><div class="act-t"><strong>Holiday announcement</strong><span>Eid break · Apr 3, 2026</span></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mh"><h3>📢 Post New Notice</h3><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mb">
+      <div class="mf">
+        <label>NOTICE TYPE</label>
+        <div class="tbtns" id="tbtns">
+          <button class="tbtn sg" onclick="selType('general',this)">📋 General</button>
+          <button class="tbtn" onclick="selType('urgent',this)">🚨 Urgent</button>
+          <button class="tbtn" onclick="selType('event',this)">🎉 Event</button>
+          <button class="tbtn" onclick="selType('exam',this)">📝 Exam</button>
+          <button class="tbtn" onclick="selType('holiday',this)">🏖 Holiday</button>
+        </div>
+      </div>
+      <div class="mf"><label>TITLE *</label><input type="text" id="mTitle" placeholder="Notice title…"></div>
+      <div class="mf"><label>MESSAGE *</label><textarea id="mMsg" rows="4" placeholder="Write notice content…"></textarea></div>
+      <div class="mgrid">
+        <div class="mf"><label>DATE</label><input type="date" id="mDate" value="2026-04-09"></div>
+        <div class="mf"><label>EXPIRY DATE</label><input type="date" id="mExp" value="2026-04-30"></div>
+      </div>
+      <div class="mf">
+        <label>SEND TO</label>
+        <div class="mchks">
+          <div class="mck on" onclick="this.classList.toggle('on')">All Students</div>
+          <div class="mck on" onclick="this.classList.toggle('on')">All Parents</div>
+          <div class="mck" onclick="this.classList.toggle('on')">Teachers</div>
+          <div class="mck" onclick="this.classList.toggle('on')">Class X</div>
+          <div class="mck" onclick="this.classList.toggle('on')">Class XI</div>
+        </div>
+      </div>
+      <div class="mf">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer">
+          <input type="checkbox" id="mPin" style="width:14px;height:14px;accent-color:var(--b500)">
+          📌 Pin this notice to top
+        </label>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="mfb cn" onclick="closeModal()">Cancel</button>
+      <button class="mfb sv" onclick="postNotice()">📢 Post & Send</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const icons={general:'📋',urgent:'🚨',event:'🎉',exam:'📝',holiday:'🏖'};
+const labels={general:'General',urgent:'Urgent',event:'Event',exam:'Exam',holiday:'Holiday'};
+let selType_='general';
+let activeFilter='';
+
+let notices=[
+  {id:1,type:'urgent',title:'⚠️ Fee Payment Deadline — April 15',msg:'All students must clear outstanding fees by April 15, 2026. Late payment will incur a fine of ৳200 per week.',date:'Apr 9, 2026',exp:'Apr 15, 2026',aud:'Due Students · Parents',sms:true},
+  {id:2,type:'general',title:'🏫 Parent-Teacher Meeting — April 13',msg:'A mandatory PTM will be held on April 13 at 10:00 AM in the school auditorium. All parents of Class IX & X students must attend.',date:'Apr 8, 2026',exp:'Apr 13, 2026',aud:'All Parents · Class IX & X',sms:true},
+  {id:3,type:'exam',title:'📝 Mid-Term Exam Schedule Released',msg:'The mid-term examination schedule for Classes VIII to XII has been published. Admit cards will be distributed on April 10.',date:'Apr 7, 2026',exp:'Apr 30, 2026',aud:'All Students',sms:false},
+  {id:4,type:'holiday',title:'🌙 Eid-ul-Fitr Holiday Notice',msg:'The institution will remain closed from April 28 to May 5, 2026 on the occasion of Eid-ul-Fitr. Classes resume May 6.',date:'Apr 5, 2026',exp:'May 6, 2026',aud:'Everyone',sms:true},
+  {id:5,type:'general',title:'📚 Library Hours Extended',msg:'The school library will now remain open from 8:00 AM to 5:00 PM on weekdays. Students are encouraged to use extended hours for exam preparation.',date:'Apr 3, 2026',exp:'Apr 30, 2026',aud:'All Students',sms:false},
+  {id:6,type:'urgent',title:'🚨 Mandatory Uniform Policy Reminder',msg:'All students must adhere to the school uniform policy from next Monday. Students without proper uniform will not be allowed in classrooms.',date:'Apr 2, 2026',exp:'Apr 12, 2026',aud:'All Students · Parents',sms:true},
+];
+let filtered=[...notices];
+
+function render(){
+  const list=document.getElementById('nlist');
+  const empty=document.getElementById('empty');
+  if(!filtered.length){list.innerHTML='';empty.classList.add('show');return;}
+  empty.classList.remove('show');
+  list.innerHTML=filtered.map(n=>`
+    <div class="nc">
+      <div class="nc-bar ${n.type}"></div>
+      <div class="nc-body">
+        <div class="nc-top">
+          <div class="nc-title">${n.title}</div>
+          <span class="nc-badge ${n.type}">${icons[n.type]} ${labels[n.type]}</span>
+        </div>
+        <div class="nc-txt">${n.msg}</div>
+        <div class="nc-foot">
+          <div class="nc-meta">
+            <span class="nc-mi">📅 ${n.date}</span>
+            <span class="nc-mi">⏳ ${n.exp}</span>
+            <span class="nc-mi">👥 ${n.aud}</span>
+            ${n.sms?'<span class="nc-mi" style="color:var(--grn)">📱 SMS</span>':''}
+          </div>
+          <div class="nc-acts">
+            <button class="na" onclick="pinN(${n.id})">📌</button>
+            <button class="na" onclick="toast_('✏️ Editing notice…','')">✏️</button>
+            <button class="na" onclick="toast_('📱 SMS sent to '+${JSON.stringify(n.aud)},'gr')">📱</button>
+            <button class="na r" onclick="delN(${n.id})">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function setFilter(type,btn){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  activeFilter=type;
+  applyFilter();
+}
+function applyFilter(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  filtered=notices.filter(n=>{
+    if(activeFilter&&n.type!==activeFilter)return false;
+    if(q&&!n.title.toLowerCase().includes(q)&&!n.msg.toLowerCase().includes(q))return false;
+    return true;
+  });
+  render();
+}
+
+function pinN(id){
+  const n=notices.find(x=>x.id===id);
+  if(n){document.getElementById('pinTitle').textContent=n.title.replace(/^[^\w]*/,'').trim();document.getElementById('pinSub').textContent=n.aud+' · Posted by Admin';}
+  toast_('📌 Pinned!','gr');
+}
+function delN(id){notices=notices.filter(n=>n.id!==id);applyFilter();toast_('🗑 Deleted','re');}
+
+function openModal(){document.getElementById('mbg').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('mbg').classList.remove('open');document.body.style.overflow='';document.getElementById('mTitle').value='';document.getElementById('mMsg').value='';}
+function selType(t,btn){selType_=t;document.querySelectorAll('.tbtn').forEach(b=>b.className='tbtn');btn.className='tbtn s'+t[0];}
+function postNotice(){
+  const title=document.getElementById('mTitle').value.trim();
+  const msg=document.getElementById('mMsg').value.trim();
+  if(!title||!msg){toast_('⚠️ Fill required fields','re');return;}
+  notices.unshift({id:Date.now(),type:selType_,title:icons[selType_]+' '+title,msg,date:'Apr 9, 2026',exp:'Apr 30, 2026',aud:'All Students · Parents',sms:true});
+  if(document.getElementById('mPin').checked){document.getElementById('pinTitle').textContent=title;document.getElementById('pinSub').textContent='All Students · Parents';}
+  closeModal();applyFilter();toast_('✅ Notice posted!','gr');
+}
+
+function toggle_ck(el){const ck=el.querySelector('.ch-ck');ck.textContent=el.classList.contains('on')?'✓':'';}
+function toggle_ack(el){const ck=el.querySelector('.aud-ck');ck.textContent=el.classList.contains('on')?'✓':'';}
+
+let tt;
+function toast_(msg,type=''){
+  clearTimeout(tt);
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');
+  requestAnimationFrame(()=>t.classList.add('show'));
+  tt=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function openSB(){document.getElementById('sb').classList.add('open');document.getElementById('ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('ov').classList.remove('open');document.body.style.overflow='';}
+window.addEventListener('resize',()=>{if(window.innerWidth>720)closeSB();});
+
+render();
+</script>
+</body>
+</html>
