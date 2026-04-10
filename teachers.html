@@ -20,17 +20,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a
 }
 
 /* ── OVERLAY ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
 .overlay.open{display:block}
 
 /* ── SIDEBAR ── */
-.sidebar{width:var(--sw);height:100vh;background:var(--b950);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:transform .28s ease;overflow-y:auto}
-.sb-brand{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sb-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--b500),var(--b400));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.sb-name strong{font-size:.83rem;font-weight:800;color:#fff;display:block}
-.sb-name span{font-size:.6rem;color:var(--b300);display:block}
 .sb-x{display:none;margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
-.sb-nav{padding:8px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
 .sb-lbl{font-size:.54rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:10px 8px 4px;display:block}
 .sb-a{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;color:rgba(255,255,255,.5);font-size:.79rem;font-weight:500;text-decoration:none;transition:all .15s}
 .sb-a:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
@@ -231,8 +224,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a
   .right-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
 }
 @media(max-width:720px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
   .sb-x{display:flex}
   .hbg{display:flex}
   .main{margin-left:0;width:100%}
@@ -259,46 +250,113 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc;color:#0f172a
   .sd strong{font-size:1rem}
   .content{padding:10px}
 }
+
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
+.sb-overlay.open{display:block}
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--blue-950);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 24px rgba(0,0,0,.18);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.sb-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px}
+.sb-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--blue-500),var(--blue-400));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 4px 12px rgba(45,107,196,.45)}
+.sb-name strong{font-weight:800;font-size:.85rem;color:#fff;letter-spacing:.3px;display:block}
+.sb-name span{font-size:.62rem;color:var(--blue-300);font-weight:500;margin-top:1px;display:block}
+.sb-close{display:none;margin-left:auto;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);width:28px;height:28px;border-radius:7px;font-size:14px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:9px}
+.sb-section-label{font-size:.56rem;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:12px 8px 5px;display:block}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .16s;color:rgba(255,255,255,.52);font-size:.81rem;font-weight:500;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.88)}
+.sb-item.active{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(45,107,196,.32)}
+.sb-item .icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(255,255,255,.07);flex-shrink:0}
+.sb-item.active .icon{background:rgba(255,255,255,.18)}
+.sb-item .nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:99px}
+.sb-footer{padding:12px;border-top:1px solid rgba(255,255,255,.07)}
+.sb-profile{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px;cursor:pointer;transition:background .16s}
+.sb-profile:hover{background:rgba(255,255,255,.07)}
+.sb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--blue-950);flex-shrink:0}
+.sb-profile-info strong{font-size:.76rem;font-weight:700;color:#fff;display:block}
+.sb-profile-info span{font-size:.62rem;color:var(--slate-400)}
+.hamburger{display:none;background:none;border:1.5px solid var(--slate-200);border-radius:9px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--slate-600);flex-shrink:0;transition:border-color .15s}
+.hamburger:hover{border-color:var(--blue-400);color:var(--blue-500)}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,.35)}
+  .sb-close{display:flex}
+  .hamburger{display:flex}
 </style>
 </head>
 <body>
 
-<div class="overlay" id="ov" onclick="closeSB()"></div>
+<div class="sb-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <!-- SIDEBAR -->
-<aside class="sidebar" id="sb">
+<aside class="sidebar" id="sidebar">
   <div class="sb-brand">
     <div class="sb-logo">🎓</div>
-    <div class="sb-name"><strong>EduManage Pro</strong><span>School Management System</span></div>
-    <button class="sb-x" onclick="closeSB()">✕</button>
+    <div class="sb-name">
+      <strong>EduManage Pro</strong>
+      <span>School Management System</span>
+    </div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
   </div>
   <nav class="sb-nav">
-    <span class="sb-lbl">Main</span>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html"><span class="ic">📊</span>Dashboard</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/students.html"><span class="ic">🎓</span>Students</a>
-    <a class="sb-a on" href="https://rahulraihan21-lab.github.io/edumanage-pro/teachers.html"><span class="ic">👨‍🏫</span>Teachers</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/attendance.html"><span class="ic">📅</span>Attendance</a>
-    <span class="sb-lbl">Academic</span>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/exams.html"><span class="ic">📝</span>Exams</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/exams.html"><span class="ic">📋</span>Results</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html"><span class="ic">📚</span>Class Routine</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html"><span class="ic">📖</span>Lecture Plans</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html"><span class="ic">✏️</span>Assignments</a>
-    <span class="sb-lbl">Finance</span>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/fees.html"><span class="ic">💰</span>Fee Collection</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/fees.html"><span class="ic">💸</span>Expenses</a>
-    <span class="sb-lbl">Communication</span>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/notices.html"><span class="ic">📢</span>Notices</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/sms.html"><span class="ic">📱</span>SMS / Calls</a>
-    <a class="sb-a" href="https://rahulraihan21-lab.github.io/edumanage-pro/settings.html"><span class="ic">⚙️</span>Settings</a>
+    <span class="sb-section-label">Main</span>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html">
+        <span class="icon">⬜</span> Dashboard
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/students.html">
+        <span class="icon">⬜</span> Students
+      </a>
+      <a class="sb-item active" href="https://rahulraihan21-lab.github.io/edumanage-pro/teachers.html">
+        <span class="icon">⬜</span> Teachers
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/attendance.html">
+        <span class="icon">⬜</span> Attendance
+      </a>
+    <span class="sb-section-label">Academic</span>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/exams.html">
+        <span class="icon">⬜</span> Exams
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/exams.html">
+        <span class="icon">⬜</span> Results
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html">
+        <span class="icon">⬜</span> Class Routine
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html">
+        <span class="icon">⬜</span> Lecture Plans
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/dashboard.html">
+        <span class="icon">⬜</span> Assignments
+      </a>
+    <span class="sb-section-label">Finance</span>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/fees.html">
+        <span class="icon">⬜</span> Fee Collection
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/fees.html">
+        <span class="icon">⬜</span> Expenses
+      </a>
+    <span class="sb-section-label">Communication</span>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/notices.html">
+        <span class="icon">⬜</span> Notices
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/sms.html">
+        <span class="icon">⬜</span> SMS / Calls
+      </a>
+      <a class="sb-item" href="https://rahulraihan21-lab.github.io/edumanage-pro/settings.html">
+        <span class="icon">⬜</span> Settings
+      </a>
   </nav>
-  <div class="sb-foot">
-    <div class="sb-prof">
-      <div class="sb-av">RA</div>
-      <div class="sb-pi"><strong>Admin</strong><span>Super Administrator</span></div>
+  <div class="sb-footer">
+    <div class="sb-profile">
+      <div class="sb-avatar">RA</div>
+      <div class="sb-profile-info">
+        <strong>Admin</strong>
+        <span>Super Administrator</span>
+      </div>
+      <span style="margin-left:auto;color:rgba(255,255,255,.28);font-size:10px">⚙️</span>
     </div>
   </div>
 </aside>
+
 
 <!-- MAIN -->
 <main class="main">
@@ -672,6 +730,10 @@ window.addEventListener('resize', () => { if (window.innerWidth > 720) closeSB()
 // ── INIT ──
 renderAll();
 renderAttOv();
+
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
+window.addEventListener('resize',()=>{if(window.innerWidth>768)closeSidebar();});
 </script>
 </body>
 </html>
